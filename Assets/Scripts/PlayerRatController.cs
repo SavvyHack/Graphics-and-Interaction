@@ -1,16 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Player Rat Controller — Project R.A.T.
-/// Handles horizontal movement, jumping, and the 2.5D plane restriction
-/// (X = movement, Y = jump/fall, Z = locked).
-///
-/// Attach to the PlayerRat root object, which should be structured as:
-///   PlayerRat (CharacterController + this script)
-///   ├── Model        (visual mesh, child transform — flipped/rotated to face direction)
-///   └── GroundCheck  (empty transform positioned at the rat's feet)
-/// </summary>
+
 [RequireComponent(typeof(CharacterController))]
 public class PlayerRatController : MonoBehaviour
 {
@@ -50,7 +41,6 @@ public class PlayerRatController : MonoBehaviour
     private bool isGrounded;
     private bool facingRight = true;
 
-    // Animator parameter hashes (set these parameter names up on the Animator Controller)
     private static readonly int AnimSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIsGrounded = Animator.StringToHash("IsGrounded");
     private static readonly int AnimVerticalVelocity = Animator.StringToHash("VerticalVelocity");
@@ -82,15 +72,8 @@ public class PlayerRatController : MonoBehaviour
 
     private void CheckGrounded()
     {
-        if (groundCheck != null)
-        {
-            isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayers, QueryTriggerInteraction.Ignore);
-        }
-        else
-        {
-            // Fallback if no GroundCheck transform is assigned.
-            isGrounded = controller.isGrounded;
-        }
+        // CharacterController.isGrounded is authoritative here
+        isGrounded = controller.isGrounded;
 
         if (isGrounded)
         {
@@ -123,7 +106,7 @@ public class PlayerRatController : MonoBehaviour
         float rate = Mathf.Abs(input) > 0.01f ? acceleration : deceleration;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * Time.deltaTime);
 
-        // Update facing direction based on actual movement intent, not residual momentum.
+        // Update facing direction based on movement intent, not residual momentum.
         if (input > 0.01f && !facingRight) SetFacing(true);
         else if (input < -0.01f && facingRight) SetFacing(false);
     }

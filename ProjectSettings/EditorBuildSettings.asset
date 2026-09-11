@@ -6,6 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/PrototypeLevel/RatEnclosure.unity
+    guid: 2b2898437f730ab42b15796121261e47
+  - enabled: 0
     path: Assets/StartScene.unity
     guid: 06cbe14e58ef1404d920a5b1f51db1ff
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

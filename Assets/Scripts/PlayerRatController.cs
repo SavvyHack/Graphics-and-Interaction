@@ -82,6 +82,8 @@ public class PlayerRatController : MonoBehaviour
 
     private void CheckGrounded()
     {
+        // A foot sphere can still overlap the ledge during the first frames of ascent.
+        if (verticalVelocity > 0f) { isGrounded = false; coyoteTimer = 0f; return; }
         if (groundCheck != null)
         {
             isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayers, QueryTriggerInteraction.Ignore);
@@ -165,7 +167,25 @@ public class PlayerRatController : MonoBehaviour
     private void Move()
     {
         Vector3 velocity = new Vector3(currentSpeed, verticalVelocity, 0f);
-        controller.Move(velocity * Time.deltaTime);
+        Vector3 carry = Vector3.zero;
+        if (verticalVelocity <= 0f && Physics.SphereCast(
+            transform.position + controller.center, controller.radius * 0.8f, Vector3.down,
+            out RaycastHit support, controller.height * 0.5f - controller.radius * 0.8f + 0.3f,
+            groundLayers, QueryTriggerInteraction.Ignore))
+        {
+            TrialMovingPlatform platform = support.collider.GetComponentInParent<TrialMovingPlatform>();
+            if (platform != null) carry = platform.Delta;
+        }
+        CollisionFlags flags = controller.Move(velocity * Time.deltaTime + carry);
+        if ((flags & CollisionFlags.Above) != 0 && verticalVelocity > 0f) verticalVelocity = 0f;
+    }
+
+    public void Respawn(Vector3 position)
+    {
+        controller.enabled = false;
+        transform.position = new Vector3(position.x, position.y, fixedZ);
+        currentSpeed = verticalVelocity = coyoteTimer = 0f;
+        controller.enabled = true;
     }
 
     private void LockToPlane()

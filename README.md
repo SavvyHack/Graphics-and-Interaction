@@ -1,5 +1,9 @@
 # Game Design Document
 
+> **Playable prototype level:** Open `Assets/PrototypeLevel/RatEnclosure.unity` and press Play.
+> A/D or arrows move, Space jumps, Shift sprints, and R restarts.
+> See [level design and integration notes](Documentation/PROTOTYPE_LEVEL.md).
+
 ## Working Title
 
 **Project R.A.T.** *(working title --- final name TBD)*

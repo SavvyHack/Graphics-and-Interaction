@@ -19,9 +19,30 @@ public static class RatLevelSmokeTests
 
     public static void Run()
     {
-        EditorSceneManager.OpenScene("Assets/PrototypeLevel/RatEnclosure.unity");
+        EditorSceneManager.OpenScene(PrototypeAssetPaths.PrototypeScene);
         SessionState.SetBool("RatSmokeArmed", true);
         EditorApplication.EnterPlaymode();
+    }
+
+    // Exercise the supervisor's path: open the starter scene, then press Play.
+    // Do not configure the launch scene here; the editor startup hook must do it.
+    public static void RunFromStarter()
+    {
+        // Batch executeMethod runs before the first editor update. A supervisor
+        // presses Play after startup callbacks and asset import have completed.
+        EditorApplication.delayCall += () =>
+        {
+            try
+            {
+                if (AssetDatabase.GetAssetPath(EditorSceneManager.playModeStartScene) != PrototypePlayMode.ScenePath)
+                    throw new Exception("Prototype was not configured automatically as the Play entry scene.");
+                EditorSceneManager.OpenScene(PrototypeAssetPaths.StarterScene);
+                SessionState.SetBool("RatSmokeArmed", true);
+                SessionState.SetBool("RatSmokeCheckStartup", true);
+                EditorApplication.EnterPlaymode();
+            }
+            catch (Exception error) { Debug.LogException(error); Finish(1); }
+        };
     }
     private static void Tick()
     {
@@ -71,6 +92,18 @@ public static class RatLevelSmokeTests
     private static IEnumerator Check()
     {
         IEnumerator wait = Wait(.5f); while (wait.MoveNext()) yield return null;
+        if (SessionState.GetBool("RatSmokeCheckStartup", false))
+        {
+            SessionState.SetBool("RatSmokeCheckStartup", false);
+            Require(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path == PrototypePlayMode.ScenePath,
+                "Pressing Play from StartScene automatically launches the saved prototype");
+            Require(Camera.main != null && Camera.main.clearFlags == CameraClearFlags.SolidColor
+                && GameObject.Find("Laboratory wall") != null && GameObject.Find("One-way observation window") != null
+                && GameObject.Find("Black laboratory floor") != null && GameObject.Find("Wall seam") == null
+                && GameObject.Find("Black laboratory floor").GetComponent<Renderer>().sharedMaterial.color == Color.black
+                && GameObject.Find("Front observation glass") != null,
+                "Observation presentation is ready on first load without running the builder");
+        }
         Require(player.GetComponent<CharacterController>().isGrounded, "Rat spawns on the release deck");
         // Each gap is exercised with the existing walking speed; sprint is unnecessary.
         float[,] jumps = { {4, 0, 4.7f, 7.8f, .4f}, {8.5f,.4f,9.2f,12.3f,.8f}, {13,.8f,13.7f,16.7f,.8f}, {47,1.4f,47.7f,50.7f,2.3f}, {51,2.3f,51.7f,54.7f,3.2f}, {55,3.2f,55.7f,58.7f,4.1f} };

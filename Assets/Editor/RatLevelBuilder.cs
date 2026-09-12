@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 /// <summary>Creates ordinary editable scene objects; no runtime geometry generation.</summary>
 public static class RatLevelBuilder
 {
-    private const string Folder = "Assets/PrototypeLevel";
+    private const string Folder = PrototypeAssetPaths.Scenes;
     private static Transform root, section;
     private static Material steel, navy, pale, cyan, orange, red, dark, rat, pink;
     private static RatTrialSession session;
@@ -18,10 +18,10 @@ public static class RatLevelBuilder
     {
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Directory.CreateDirectory(Folder);
-        Directory.CreateDirectory(Folder + "/Materials");
+        Directory.CreateDirectory(PrototypeAssetPaths.EnvironmentMaterials);
+        Directory.CreateDirectory(PrototypeAssetPaths.CharacterMaterials);
         AssetDatabase.Refresh();
         steel = Mat("Steel", "#3E576E"); navy = Mat("Structure", "#182633");
-        Material wall = Mat("Wall panels", "#243747");
         pale = Mat("Trim", "#8BB6B4"); cyan = Mat("Route light", "#6FE8FF", true);
         orange = Mat("Caution", "#F28C28", true); red = Mat("Hazard", "#FF4B4B", true);
         dark = Mat("Recess", "#182733"); rat = Mat("Rat ivory", "#FAFAF3"); pink = Mat("Rat ears", "#CE9290");
@@ -31,24 +31,16 @@ public static class RatLevelBuilder
         session = new GameObject("Playtest Session").AddComponent<RatTrialSession>();
         session.transform.SetParent(root);
         Group("00 - Enclosure");
-        Box("Rear wall", new Vector3(30, 3, 2.5f), new Vector3(68, 16, .3f), navy, false);
-        for (int i = 0; i < 17; i++)
-        {
-            Box("Recessed wall panel", new Vector3(-2 + i * 4, 3, 2.25f), new Vector3(3.9f, 13.5f, .15f), wall, false);
-            Box("Overhead light", new Vector3(-2 + i * 4, 8.8f, 2.02f), new Vector3(2.4f, .06f, .06f), cyan, false);
-            Box("Wall seam", new Vector3(-2 + i * 4, 3, 2.1f), new Vector3(.025f, 13, .03f), pale, false);
-        }
         Box("Lower enclosure rail", new Vector3(30, -2.8f, -.5f), new Vector3(68, .3f, 4), navy, false);
         Box("Top enclosure rail", new Vector3(30, 9.8f, 0), new Vector3(68, .3f, 5), navy, false);
         Box("Start boundary", new Vector3(-3.8f, 3, 0), new Vector3(.4f, 14, 4), navy);
         Box("Exit boundary", new Vector3(63.8f, 3, 0), new Vector3(.4f, 14, 4), navy);
-        Material glass = AssetDatabase.LoadAssetAtPath<Material>("Assets/GlassEnclosure.mat");
+        Material glass = AssetDatabase.LoadAssetAtPath<Material>(PrototypeAssetPaths.GlassMaterial);
         if (glass != null)
         {
-            string glassPath = Folder + "/Materials/Observation glass.mat";
+            string glassPath = PrototypeAssetPaths.LevelMaterial("Observation glass");
             Material observation = AssetDatabase.LoadAssetAtPath<Material>(glassPath);
             if (observation == null) { observation = new Material(glass); AssetDatabase.CreateAsset(observation, glassPath); }
-            observation.SetFloat("_BaseAlpha", .045f); observation.SetFloat("_ShimmerStrength", .025f);
             EditorUtility.SetDirty(observation);
             Box("Front observation glass", new Vector3(30, 3.2f, -2.3f), new Vector3(67, 12.8f, .025f), observation, false);
         }
@@ -61,7 +53,7 @@ public static class RatLevelBuilder
         Platform("Ramp approach", 15.4f, 19, .8f);
         Water(5, 6.5f); Water(9.5f, 11); Water(14, 15.4f);
         Label("01   ACCLIMATION", 1f, 5.6f);
-        Label("SHORT JUMPS  /  FOLLOW THE CYAN EDGES", 4.5f, 4.7f, .045f);
+        Label("SHORT JUMPS  /  FOLLOW THE PLATFORM EDGES", 4.5f, 4.7f, .045f);
         Door("Release hatch", -2f, 0, false);
         session.startPoint = Point("Start", new Vector3(0, .08f, 0));
         Checkpoint(1, 17, .8f);
@@ -134,7 +126,7 @@ public static class RatLevelBuilder
         camera.tag = "MainCamera";
         camera.transform.position = new Vector3(5, 3.5f, -22);
         camera.orthographic = true; camera.orthographicSize = 5.4f;
-        camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.035f, .06f, .09f);
+        camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = Color.black;
         FixedCameraFollow follow = camera.gameObject.AddComponent<FixedCameraFollow>();
         Set(follow, "target", player); Set(follow, "followOffset", new Vector2(2.5f, 1.8f));
         Set(follow, "clampToBounds", true); Set(follow, "minBounds", new Vector2(5f, 3.5f));
@@ -145,9 +137,10 @@ public static class RatLevelBuilder
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = new Color(.55f, .65f, .74f);
         RenderSettings.fog = false;
-        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), Folder + "/RatEnclosure.unity");
+        ObservationStyle.ApplyToOpenScene();
+        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), PrototypeAssetPaths.PrototypeScene);
         // Preserve StartScene; select this complete level as the playable build entry.
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(Folder + "/RatEnclosure.unity", true), new EditorBuildSettingsScene("Assets/StartScene.unity", false) };
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(PrototypeAssetPaths.PrototypeScene, true), new EditorBuildSettingsScene(PrototypeAssetPaths.StarterScene, false) };
         AssetDatabase.SaveAssets();
         Validate();
         string output = Environment.GetEnvironmentVariable("RAT_OUTPUT");
@@ -165,13 +158,13 @@ public static class RatLevelBuilder
     {
         string output = Environment.GetEnvironmentVariable("RAT_OUTPUT");
         if (string.IsNullOrEmpty(output)) throw new Exception("Set RAT_OUTPUT to the delivery folder.");
-        AssetDatabase.ExportPackage(new[] { Folder, "Assets/Editor", "Assets/Scripts", "Assets/GlassEnclosure.mat", "Assets/Shaders/GlassEnclosure.shader" }, Path.Combine(output, "Rat-Enclosure.unitypackage"), ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+        AssetDatabase.ExportPackage(new[] { Folder, PrototypeAssetPaths.Materials, "Assets/Editor", "Assets/Scripts", "Assets/Shaders" }, Path.Combine(output, "Rat-Enclosure.unitypackage"), ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
         Debug.Log("RAT_EXPORT_OK");
     }
 
     private static Material Mat(string name, string hex, bool emission = false)
     {
-        string path = Folder + "/Materials/" + name + ".mat";
+        string path = PrototypeAssetPaths.LevelMaterial(name);
         Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (mat == null) { mat = new Material(Shader.Find("Standard")); AssetDatabase.CreateAsset(mat, path); }
         ColorUtility.TryParseHtmlString(hex, out Color color); mat.color = color;

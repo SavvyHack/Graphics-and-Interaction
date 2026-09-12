@@ -1,8 +1,10 @@
 # Game Design Document
 
-> **Playable prototype level:** Open `Assets/PrototypeLevel/RatEnclosure.unity` and press Play.
+> **Test the prototype:** Open this project in Unity 6000.3.18f1 and press **Play**. The saved prototype launches automatically, even when another scene is open. No level-builder script or setup menu is required. Built players also start in the prototype.
 > A/D or arrows move, Space jumps, Shift sprints, and R restarts.
 > See [level design and integration notes](Documentation/PROTOTYPE_LEVEL.md).
+
+Project files are grouped under `Assets/Scenes`, `Assets/Scripts`, `Assets/Shaders`, and `Assets/Materials`. See the [directory guide](Documentation/PROJECT_STRUCTURE.md) for the complete layout and where to make changes.
 
 ## Working Title
 
@@ -132,7 +134,7 @@ There is no scoring system; the primary goal is reaching the exit with at least 
 -   **Power-ups**: the player must use different power-ups to navigate the obstacles, the power-ups are explained in the illustration.
 -   These mechanics tie into the enclosure theme directly: every obstacle is something that could plausibly exist inside a glass habitat, so the mechanics and setting reinforce each other rather than requiring separate justification
 
-## ![Power-ups](Images/power-ups.png)
+## ![Power-ups](Documentation/Images/power-ups.png)
 
 # 4. Levels and World Design
 
@@ -142,11 +144,11 @@ The game world is **2.5D**: characters and props are modelled in 3D, but gamepla
 
 The world is a **single continuous glass enclosure**, rather than separate levels with loading breaks. It is divided into connected sections (see Section 3, Progression) that the camera moves through as the active rat progresses. There is no map or minimap, since the enclosure is small enough to be understood visually as the player moves through it.
 
-![Level 1 design](Images/Level1.png)
+![Level 1 design](Documentation/Images/Level1.png)
 
-![Level 2 design](Images/level2.png)
+![Level 2 design](Documentation/Images/level2.png)
 
-![Level 3 design](Images/level3.png)
+![Level 3 design](Documentation/Images/level3.png)
 
 ## Objects
 
@@ -225,7 +227,7 @@ No dialogue or voice-over is used; all feedback is communicated through sound ef
 
 The assets we will generate ourselves due to the lack of free assets that are relevant for our game idea. We’ll use AI for help with this.
 
-![Test subject items](Images/test%20subject%20items.png)
+![Test subject items](Documentation/Images/test%20subject%20items.png)
 
 ------------------------------------------------------------------------
 

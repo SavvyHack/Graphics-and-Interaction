@@ -1046,6 +1046,7 @@ GameObject:
   - component: {fileID: 81616152}
   - component: {fileID: 81616151}
   - component: {fileID: 81616150}
+  - component: {fileID: 81616154}
   m_Layer: 0
   m_Name: Sweep arm
   m_TagString: Untagged
@@ -1075,7 +1076,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81616148}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -1162,6 +1163,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81616148}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &81616154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81616148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &81636299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,6 +1945,7 @@ GameObject:
   - component: {fileID: 212640630}
   - component: {fileID: 212640632}
   - component: {fileID: 212640631}
+  - component: {fileID: 212640633}
   m_Layer: 0
   m_Name: Checkpoint 4
   m_TagString: Untagged
@@ -1960,7 +1975,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 212640629}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -1990,6 +2005,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 2, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &212640633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212640629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504937944fc484052bf68b5a1b787101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
+  checkpointNumber: 4
+  respawnPoint: {fileID: 1193194498}
+  lifeManager: {fileID: 1763493637}
+  triggerOnlyOnce: 1
 --- !u!1 &234655869
 GameObject:
   m_ObjectHideFlags: 0
@@ -3294,6 +3325,7 @@ GameObject:
   - component: {fileID: 316844258}
   - component: {fileID: 316844260}
   - component: {fileID: 316844259}
+  - component: {fileID: 316844261}
   m_Layer: 0
   m_Name: Checkpoint 3
   m_TagString: Untagged
@@ -3323,7 +3355,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 316844257}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -3353,6 +3385,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 2, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &316844261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 316844257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504937944fc484052bf68b5a1b787101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
+  checkpointNumber: 3
+  respawnPoint: {fileID: 2027412553}
+  lifeManager: {fileID: 1763493637}
+  triggerOnlyOnce: 1
 --- !u!1 &319360935
 GameObject:
   m_ObjectHideFlags: 0
@@ -6300,6 +6348,7 @@ GameObject:
   - component: {fileID: 577978256}
   - component: {fileID: 577978258}
   - component: {fileID: 577978257}
+  - component: {fileID: 577978259}
   m_Layer: 0
   m_Name: Checkpoint 2
   m_TagString: Untagged
@@ -6329,7 +6378,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577978255}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -6359,6 +6408,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 2, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &577978259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577978255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504937944fc484052bf68b5a1b787101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
+  checkpointNumber: 2
+  respawnPoint: {fileID: 954748087}
+  lifeManager: {fileID: 1763493637}
+  triggerOnlyOnce: 1
 --- !u!1 &582775520
 GameObject:
   m_ObjectHideFlags: 0
@@ -6849,6 +6914,7 @@ GameObject:
   - component: {fileID: 648998506}
   - component: {fileID: 648998508}
   - component: {fileID: 648998507}
+  - component: {fileID: 648998509}
   m_Layer: 0
   m_Name: Exit trigger
   m_TagString: Untagged
@@ -6878,7 +6944,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 648998505}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -6908,6 +6974,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.3, y: 2.2, z: 2.4}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &648998509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648998505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48824cb5e68ab45a4bd41cdf15c6f5cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExitTrigger
 --- !u!1 &653070797
 GameObject:
   m_ObjectHideFlags: 0
@@ -8696,6 +8774,7 @@ GameObject:
   - component: {fileID: 852925850}
   - component: {fileID: 852925852}
   - component: {fileID: 852925851}
+  - component: {fileID: 852925853}
   m_Layer: 0
   m_Name: Runoff hazard
   m_TagString: Untagged
@@ -8725,7 +8804,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 852925849}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -8755,6 +8834,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.3999996, y: 0.4, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &852925853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852925849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &853190948
 GameObject:
   m_ObjectHideFlags: 0
@@ -9036,6 +9128,7 @@ GameObject:
   - component: {fileID: 923342868}
   - component: {fileID: 923342870}
   - component: {fileID: 923342869}
+  - component: {fileID: 923342871}
   m_Layer: 0
   m_Name: Runoff hazard
   m_TagString: Untagged
@@ -9065,7 +9158,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 923342867}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -9095,6 +9188,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5, y: 0.4, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &923342871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923342867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &928308658
 GameObject:
   m_ObjectHideFlags: 0
@@ -9635,7 +9741,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 52.7, y: -1.9, z: 0}
-  m_LocalScale: {x: 9.400002, y: 0.13, z: 2.7}
+  m_LocalScale: {x: 22, y: 0.5, z: 2.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1132531487}
@@ -9665,7 +9771,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 444451936d9744544b5df1b57311a485, type: 2}
+  - {fileID: 2100000, guid: 8abf6df0cb0614f4e9c26900a7b0ec9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9927,7 +10033,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 40.5, y: -1.9, z: 0}
-  m_LocalScale: {x: 7, y: 0.13, z: 2.7}
+  m_LocalScale: {x: 20, y: 0.5, z: 2.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1142282573}
@@ -9957,7 +10063,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 444451936d9744544b5df1b57311a485, type: 2}
+  - {fileID: 2100000, guid: 8abf6df0cb0614f4e9c26900a7b0ec9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11132,6 +11238,7 @@ GameObject:
   - component: {fileID: 1098903109}
   - component: {fileID: 1098903111}
   - component: {fileID: 1098903110}
+  - component: {fileID: 1098903112}
   m_Layer: 0
   m_Name: Runoff hazard
   m_TagString: Untagged
@@ -11161,7 +11268,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1098903108}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -11191,6 +11298,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5, y: 0.4, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1098903112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098903108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &1110369371
 GameObject:
   m_ObjectHideFlags: 0
@@ -11204,6 +11324,7 @@ GameObject:
   - component: {fileID: 1110369375}
   - component: {fileID: 1110369374}
   - component: {fileID: 1110369373}
+  - component: {fileID: 1110369377}
   m_Layer: 0
   m_Name: Sweep arm
   m_TagString: Untagged
@@ -11233,7 +11354,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1110369371}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -11320,6 +11441,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1110369371}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1110369377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110369371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &1132531486
 GameObject:
   m_ObjectHideFlags: 0
@@ -11877,6 +12011,7 @@ GameObject:
   - component: {fileID: 1167392911}
   - component: {fileID: 1167392913}
   - component: {fileID: 1167392912}
+  - component: {fileID: 1167392914}
   m_Layer: 0
   m_Name: Runoff hazard
   m_TagString: Untagged
@@ -11906,7 +12041,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1167392910}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -11936,6 +12071,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 9.400002, y: 0.4, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1167392914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167392910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &1179878666
 GameObject:
   m_ObjectHideFlags: 0
@@ -12205,7 +12353,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 444451936d9744544b5df1b57311a485, type: 2}
+  - {fileID: 2100000, guid: 8abf6df0cb0614f4e9c26900a7b0ec9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -12445,7 +12593,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 30, y: 3.2, z: -2.3}
-  m_LocalScale: {x: 67, y: 12.8, z: 0.025}
+  m_LocalScale: {x: 18, y: 12.8, z: 0.025}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1344913739}
@@ -13013,6 +13161,7 @@ GameObject:
   - component: {fileID: 1300286627}
   - component: {fileID: 1300286629}
   - component: {fileID: 1300286628}
+  - component: {fileID: 1300286630}
   m_Layer: 0
   m_Name: Checkpoint 1
   m_TagString: Untagged
@@ -13042,7 +13191,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300286626}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -13072,6 +13221,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7, y: 2, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1300286630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300286626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504937944fc484052bf68b5a1b787101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Checkpoint
+  checkpointNumber: 1
+  respawnPoint: {fileID: 1282126618}
+  lifeManager: {fileID: 1763493637}
+  triggerOnlyOnce: 1
 --- !u!1 &1310288431
 GameObject:
   m_ObjectHideFlags: 0
@@ -14969,6 +15134,7 @@ GameObject:
   - component: {fileID: 1454588196}
   - component: {fileID: 1454588198}
   - component: {fileID: 1454588197}
+  - component: {fileID: 1454588199}
   m_Layer: 0
   m_Name: Runoff hazard
   m_TagString: Untagged
@@ -14998,7 +15164,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1454588195}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -15028,6 +15194,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 7, y: 0.4, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1454588199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454588195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &1471863787
 GameObject:
   m_ObjectHideFlags: 0
@@ -16988,6 +17167,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1763493634}
   - component: {fileID: 1763493633}
+  - component: {fileID: 1763493638}
+  - component: {fileID: 1763493637}
+  - component: {fileID: 1763493636}
+  - component: {fileID: 1763493635}
   m_Layer: 0
   m_Name: Playtest Session
   m_TagString: Untagged
@@ -17002,7 +17185,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1763493632}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae034cff8dd449447950db8d54f317f5, type: 3}
   m_Name: 
@@ -17029,6 +17212,158 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2009221448}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1763493635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763493632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9d7e1c5f2b8a604e6d0c9f7b1a2e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  audioSource: {fileID: 1763493636}
+  checkpointClip: {fileID: 8300000, guid: 3d1b77e5091e86cc1106dae63337a6d1, type: 3}
+  ratLostClip: {fileID: 8300000, guid: 269da6f818f96972a57829732471fc4a, type: 3}
+  completionClip: {fileID: 8300000, guid: 01448930f5983f95e29b82250599ed2e, type: 3}
+  failureClip: {fileID: 8300000, guid: 00dd807327fa2da50029b2d8d96a1d60, type: 3}
+--- !u!82 &1763493636
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763493632}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1763493637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763493632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d298d3f2cdd4e03851edc32a14be1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RatLifeManager
+  player: {fileID: 660196897}
+  waitingRats:
+  - {fileID: 2060323620}
+  - {fileID: 1608085559}
+  startPoint: {fileID: 949009374}
+  respawnInvulnerabilityTime: 0.75
+  killY: -4
+  cameraFollow: {fileID: 787147936}
+  hud: {fileID: 0}
+--- !u!114 &1763493638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763493632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abd66bc5bcd734be1b0e6e3cea856174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  currentState: 0
+  lifeManager: {fileID: 1763493637}
+  hud: {fileID: 0}
+  autoRestartAfterFailure: 0
+  restartDelay: 2
 --- !u!1 &1770630384
 GameObject:
   m_ObjectHideFlags: 0
@@ -18412,7 +18747,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 5.75, y: -1.9, z: 0}
-  m_LocalScale: {x: 1.5, y: 0.13, z: 2.7}
+  m_LocalScale: {x: 18, y: 0.5, z: 2.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1807232852}
@@ -18442,7 +18777,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 444451936d9744544b5df1b57311a485, type: 2}
+  - {fileID: 2100000, guid: 8abf6df0cb0614f4e9c26900a7b0ec9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -18501,8 +18836,8 @@ Transform:
   m_GameObject: {fileID: 1895315697}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.7, y: -1.9, z: 0}
-  m_LocalScale: {x: 1.3999996, y: 0.13, z: 2.7}
+  m_LocalPosition: {x: 22.31, y: -1.9, z: 0}
+  m_LocalScale: {x: 18, y: 0.5, z: 2.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1807232852}
@@ -18532,7 +18867,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 444451936d9744544b5df1b57311a485, type: 2}
+  - {fileID: 2100000, guid: 8abf6df0cb0614f4e9c26900a7b0ec9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -20334,6 +20669,7 @@ GameObject:
   - component: {fileID: 2044872393}
   - component: {fileID: 2044872395}
   - component: {fileID: 2044872394}
+  - component: {fileID: 2044872396}
   m_Layer: 0
   m_Name: Fall catch
   m_TagString: Untagged
@@ -20363,7 +20699,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2044872392}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5ffd681b0a606e479daca23b3a7fb9f, type: 3}
   m_Name: 
@@ -20393,6 +20729,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 70, y: 0.6, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2044872396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2044872392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b022b7921fb6f465fa32ec4227bb0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardTrigger
+  lifeManager: {fileID: 1763493637}
 --- !u!1 &2049832453
 GameObject:
   m_ObjectHideFlags: 0

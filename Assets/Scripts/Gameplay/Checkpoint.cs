@@ -1,26 +1,20 @@
 using UnityEngine;
 
 /// <summary>
-/// Attach to a trigger volume placed at each checkpoint in the enclosure.
-/// Updates RatLifeManager's respawn point when the active rat passes
-/// through, notifies TavishPrototypeIntegration so the HUD checkpoint
-/// label updates, and plays a positive confirmation cue per the GDD's
-/// audio table.
+/// Checkpoint trigger for the three-rat life system.
+/// The trigger can use a separate safe respawn transform so the next rat is
+/// never spawned in the middle of the trigger volume.
 ///
-/// Kavish - Game systems.
+/// Kavish - game systems.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class Checkpoint : MonoBehaviour
 {
-    [Tooltip("1-based checkpoint number, shown on the HUD as 'Checkpoint N'.")]
     [SerializeField] private int checkpointNumber = 1;
-
+    [SerializeField] private Transform respawnPoint;
     [SerializeField] private RatLifeManager lifeManager;
-    [SerializeField] private TavishPrototypeIntegration integration;
-    [SerializeField] private string ratTag = "Player";
+    [SerializeField] private bool triggerOnlyOnce = true;
 
-    [Tooltip("If true, this checkpoint only fires once per attempt.")]
-    [SerializeField] private bool triggerOnlyOnce = false;
     private bool hasTriggered;
 
     private void Reset()
@@ -30,19 +24,21 @@ public class Checkpoint : MonoBehaviour
 
     private void Awake()
     {
-        if (lifeManager == null) lifeManager = FindFirstObjectByType<RatLifeManager>();
-        if (integration == null) integration = FindFirstObjectByType<TavishPrototypeIntegration>();
+        if (lifeManager == null)
+            lifeManager = FindFirstObjectByType<RatLifeManager>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerRatController rat = other.GetComponentInParent<PlayerRatController>();
-        if (rat == null) return;
-        if (triggerOnlyOnce && hasTriggered) return;
+        if (other.GetComponentInParent<PlayerRatController>() == null)
+            return;
+
+        if (triggerOnlyOnce && hasTriggered)
+            return;
 
         hasTriggered = true;
-        lifeManager?.SetCheckpoint(transform.position, checkpointNumber);
-        integration?.OnCheckpointReached(checkpointNumber);
+        Vector3 spawn = respawnPoint != null ? respawnPoint.position : transform.position;
+        lifeManager?.SetCheckpoint(spawn, checkpointNumber);
         AudioManager.Instance?.PlayCheckpoint();
     }
 }

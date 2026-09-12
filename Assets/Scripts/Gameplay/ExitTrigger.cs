@@ -1,21 +1,22 @@
 using UnityEngine;
 
 /// <summary>
-/// Attach to the trigger volume at the enclosure exit. Fires the win
-/// condition once the active rat reaches it, per the GDD's "reach the exit
-/// with at least one rat remaining" win state.
+/// Win-condition trigger: reaching the enclosure exit with any rat remaining
+/// completes the attempt.
 ///
-/// Kavish - Game systems (primary responsibility).
+/// Kavish - game systems.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class ExitTrigger : MonoBehaviour
 {
-    [SerializeField] private string ratTag = "Player";
+    private void Reset()
+    {
+        GetComponent<Collider>().isTrigger = true;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerRatController rat = other.GetComponentInParent<PlayerRatController>();
-        if (rat == null) return;
-        GameManager.Instance?.WinGame();
+        if (other.GetComponentInParent<PlayerRatController>() != null)
+            GameManager.Instance?.WinGame();
     }
 }

@@ -1,8 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Optional audio bridge for the prototype game systems. Assign clips in the
-/// Inspector when audio assets are available; missing clips are ignored safely.
+/// Small one-shot audio service for Kavish's prototype systems.
+/// The supplied clips are original synthesized placeholders and can be replaced
+/// later without changing gameplay code.
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip checkpointClip;
     [SerializeField] private AudioClip ratLostClip;
     [SerializeField] private AudioClip completionClip;
+    [SerializeField] private AudioClip failureClip;
 
     private void Awake()
     {
@@ -22,6 +24,7 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
+
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
     }
@@ -29,6 +32,7 @@ public class AudioManager : MonoBehaviour
     public void PlayCheckpoint() => Play(checkpointClip);
     public void PlayRatLost() => Play(ratLostClip);
     public void PlayCompletion() => Play(completionClip);
+    public void PlayFailure() => Play(failureClip);
 
     private void Play(AudioClip clip)
     {

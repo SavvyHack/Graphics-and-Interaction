@@ -1,18 +1,14 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Central project/game manager for Project R.A.T.
-/// Owns overall attempt state (Playing / Won / Lost) and coordinates the
-/// win/lose flow between the life system, UI and audio, per the GDD's
-/// "reach the exit with at least one rat remaining" win condition and
-/// "all rats lost -> restart from beginning" fail condition.
+/// Central attempt-state controller for Project R.A.T.
+/// Owns Playing/Won/Lost state and restart behaviour while RatLifeManager owns
+/// individual life loss and checkpoint respawning.
 ///
-/// Calls into TavishPrototypeIntegration.OnGameCompleted() / OnGameFailed()
-/// so the HUD panels react without this script knowing anything about UI.
-///
-/// Kavish - Game systems (primary responsibility).
+/// Kavish - game systems.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -25,20 +21,16 @@ public class GameManager : MonoBehaviour
         Lost
     }
 
-    [Header("State")]
     [SerializeField] private GameState currentState = GameState.Playing;
-    public GameState CurrentState => currentState;
-
-    [Header("References")]
-    [Tooltip("Assign the RatLifeManager in the scene. Auto-found if left empty.")]
     [SerializeField] private RatLifeManager lifeManager;
+    [SerializeField] private PrototypeHUD hud;
 
-    [Tooltip("Assign Tavish's integration adapter so win/lose can drive the HUD panels.")]
-    [SerializeField] private TavishPrototypeIntegration integration;
+    [Header("Restart")]
+    [Tooltip("If enabled, a failed attempt automatically restarts after this delay.")]
+    [SerializeField] private bool autoRestartAfterFailure = false;
+    [SerializeField] private float restartDelay = 2f;
 
-    [Header("Restart Behaviour")]
-    [Tooltip("Delay (seconds) before reloading the scene after all rats are lost.")]
-    [SerializeField] private float restartDelay = 1.5f;
+    public GameState CurrentState => currentState;
 
     public event Action OnGameWon;
     public event Action OnGameLost;
@@ -46,12 +38,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // One GameManager per attempt/scene.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
     }
 
@@ -61,57 +53,54 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
 
         if (lifeManager == null)
-        {
             lifeManager = FindFirstObjectByType<RatLifeManager>();
-        }
-        if (integration == null)
-        {
-            integration = FindFirstObjectByType<TavishPrototypeIntegration>();
-        }
+
+        if (hud == null)
+            hud = FindFirstObjectByType<PrototypeHUD>();
     }
 
-    /// <summary>
-    /// Called by ExitTrigger when a rat reaches the exit with at least one
-    /// life remaining. Marks the attempt as successful.
-    /// </summary>
+    private void Update()
+    {
+        // Keeps the original prototype's R-to-restart behaviour after the
+        // RatTrialSession harness is disabled.
+        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+            RestartAttempt();
+    }
+
     public void WinGame()
     {
-        if (currentState != GameState.Playing) return;
+        if (currentState != GameState.Playing)
+            return;
 
         currentState = GameState.Won;
+        lifeManager?.MarkFinished();
+        hud?.ShowCompletion();
+        AudioManager.Instance?.PlayCompletion();
         OnGameWon?.Invoke();
 
-        AudioManager.Instance?.PlayCompletion();
-        integration?.OnGameCompleted();
-
-        Debug.Log("[GameManager] Attempt successful - exit reached.");
+        Debug.Log("[GameManager] Enclosure cleared.");
     }
 
-    /// <summary>
-    /// Called by RatLifeManager once the third rat has died. Marks the
-    /// attempt as failed, shows the failure panel and schedules a restart.
-    /// </summary>
     public void LoseGame()
     {
-        if (currentState != GameState.Playing) return;
+        if (currentState != GameState.Playing)
+            return;
 
         currentState = GameState.Lost;
+        hud?.ShowFailure();
+        AudioManager.Instance?.PlayFailure();
         OnGameLost?.Invoke();
 
-        integration?.OnGameFailed();
+        Debug.Log("[GameManager] All three rats lost.");
 
-        Debug.Log("[GameManager] All rats lost - restarting attempt.");
-        Invoke(nameof(RestartAttempt), restartDelay);
+        if (autoRestartAfterFailure)
+            Invoke(nameof(RestartAttempt), restartDelay);
     }
 
-    /// <summary>
-    /// Reloads the current scene, restarting the attempt from the beginning
-    /// of the enclosure, per the GDD's fail-state rule.
-    /// </summary>
     public void RestartAttempt()
     {
         OnGameRestarted?.Invoke();
         Scene activeScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(activeScene.buildIndex);
+        SceneManager.LoadScene(activeScene.path);
     }
 }

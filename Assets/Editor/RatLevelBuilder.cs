@@ -31,10 +31,10 @@ public static class RatLevelBuilder
         session = new GameObject("Playtest Session").AddComponent<RatTrialSession>();
         session.transform.SetParent(root);
         Group("00 - Enclosure");
-        Box("Lower enclosure rail", new Vector3(30, -2.8f, -.5f), new Vector3(68, .3f, 4), navy, false);
-        Box("Top enclosure rail", new Vector3(30, 9.8f, 0), new Vector3(68, .3f, 5), navy, false);
+        Box("Lower enclosure rail", new Vector3(40.5f, -2.8f, -.5f), new Vector3(89, .3f, 4), navy, false);
+        Box("Top enclosure rail", new Vector3(40.5f, 9.8f, 0), new Vector3(89, .3f, 5), navy, false);
         Box("Start boundary", new Vector3(-3.8f, 3, 0), new Vector3(.4f, 14, 4), navy);
-        Box("Exit boundary", new Vector3(63.8f, 3, 0), new Vector3(.4f, 14, 4), navy);
+        Box("Exit boundary", new Vector3(84.8f, 3, 0), new Vector3(.4f, 14, 4), navy);
         Material glass = AssetDatabase.LoadAssetAtPath<Material>(PrototypeAssetPaths.GlassMaterial);
         if (glass != null)
         {
@@ -42,9 +42,9 @@ public static class RatLevelBuilder
             Material observation = AssetDatabase.LoadAssetAtPath<Material>(glassPath);
             if (observation == null) { observation = new Material(glass); AssetDatabase.CreateAsset(observation, glassPath); }
             EditorUtility.SetDirty(observation);
-            Box("Front observation glass", new Vector3(30, 3.2f, -2.3f), new Vector3(67, 12.8f, .025f), observation, false);
+            Box("Front observation glass", new Vector3(40.5f, 3.2f, -2.3f), new Vector3(88, 12.8f, .025f), observation, false);
         }
-        Zone("Fall catch", new Vector3(30, -3.2f, 0), new Vector3(70, .6f, 5), TrialZone.ZoneType.Hazard);
+        Zone("Fall catch", new Vector3(40.5f, -3.2f, 0), new Vector3(90, .6f, 5), TrialZone.ZoneType.Hazard);
 
         Group("01 - Acclimation / forgiving jumps");
         Platform("Release deck", -3.5f, 5, 0);
@@ -130,7 +130,7 @@ public static class RatLevelBuilder
         FixedCameraFollow follow = camera.gameObject.AddComponent<FixedCameraFollow>();
         Set(follow, "target", player); Set(follow, "followOffset", new Vector2(2.5f, 1.8f));
         Set(follow, "clampToBounds", true); Set(follow, "minBounds", new Vector2(5f, 3.5f));
-        Set(follow, "maxBounds", new Vector2(54f, 4.5f)); session.cameraFollow = follow;
+        Set(follow, "maxBounds", new Vector2(79f, 4.8f)); session.cameraFollow = follow;
         Light light = new GameObject("Cool key light").AddComponent<Light>();
         light.type = LightType.Directional; light.intensity = 1.2f;
         light.transform.rotation = Quaternion.Euler(35, -25, 0);

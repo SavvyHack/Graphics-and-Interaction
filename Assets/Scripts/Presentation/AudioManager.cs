@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance { get; private set; }
 
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip jumpClip;
     [SerializeField] private AudioClip checkpointClip;
     [SerializeField] private AudioClip ratLostClip;
     [SerializeField] private AudioClip completionClip;
@@ -29,6 +30,7 @@ public class AudioManager : MonoBehaviour
             audioSource = GetComponent<AudioSource>();
     }
 
+    public void PlayJump() => Play(jumpClip);
     public void PlayCheckpoint() => Play(checkpointClip);
     public void PlayRatLost() => Play(ratLostClip);
     public void PlayCompletion() => Play(completionClip);

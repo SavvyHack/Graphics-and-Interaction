@@ -51,7 +51,7 @@ TODO - see specification for details
 
 **Shader:** [`Assets/Shaders/KavishAnimatedEnergyHazard.shader`](Assets/Shaders/KavishAnimatedEnergyHazard.shader)  
 **Theme:** Animated hazard / energy effect  
-**Game use:** Applied to the cyan **Electric runoff** hazard surfaces in `RatEnclosure.unity`.
+**Game use:** Applied to the cyan **Electric runoff** surfaces and configured in gate mode on modular asset **10 - Electric Gate** in `RatEnclosure.unity`.
 
 My shader creates an animated electrical-energy surface for the prototype hazards. I chose this effect because the game design uses a cool blue-grey laboratory palette and reserves brighter cyan, red and orange colours for dangerous or interactive objects. The hazard therefore needs to be immediately readable from the fixed 2.5D camera while still fitting the science-laboratory setting. The effect is fully procedural: it does not depend on an animated texture, which keeps the asset small and makes the behaviour easy to control through shader parameters.
 
@@ -59,7 +59,7 @@ The **vertex shader** demonstrates custom geometry processing. It takes each ver
 
 The **fragment shader** uses the mesh UV coordinates to build moving diagonal energy bands. It combines the U and V coordinates, multiplies them by `_Scale`, subtracts time multiplied by `_Speed`, and uses `frac()` to repeat the pattern. The distance from the centre of each repeated band is converted into a soft stripe with `smoothstep()`. A second slower sine pulse varies the brightness over time, preventing the result from looking like a simple scrolling texture. The final colour is produced by interpolating between `_BaseColor` and `_EnergyColor`, with `_Intensity` controlling the visibility of the energy bands and `_Alpha` controlling overall transparency.
 
-The exposed parameters are meaningful during marking: `_Speed` visibly changes animation rate, `_Scale` changes the density of the electrical pattern, `_StripeWidth` changes band thickness, `_Intensity` changes the brightness/strength of the effect, and `_WaveHeight` / `_WaveFrequency` change vertex deformation. The shader uses a lightweight vertex/fragment Cg/HLSL pass with shader target 2.0, no texture lookups and no Shader Graph, making it suitable for the project's WebGL-focused prototype.
+The exposed parameters are meaningful during marking: `_Speed` visibly changes animation rate, `_Scale` changes the density of the electrical pattern, `_StripeWidth` changes band thickness, `_Intensity` changes the brightness/strength of the effect, and `_WaveHeight` / `_WaveFrequency` change vertex deformation. The shader uses a lightweight vertex/fragment Cg/HLSL pass with shader target 2.0, no texture lookups and no Shader Graph, making it suitable for the project's WebGL-focused prototype. Its gate mode replaces runoff bands with three independently oscillating arcs while retaining the same UV, time, `smoothstep`, intensity and vertex-stage concepts. Assets 09 and 11 use small supporting handwritten shaders for their distinct flame and laser effects; the animated energy shader remains my primary individually assessed shader.
 
 **Screenshots to capture before submission:**
 - `Documentation/Images/Kavish/hazard-slow.png`: `_Speed = 0.5`, `_Intensity = 1.0`, `_WaveHeight = 0.01`.

@@ -277,12 +277,13 @@ conducted in English.$$
 | Rat controller (movement)        | Prajeet     | Not Started |
 | Fixed camera                     | Tavish      | Not Started |
 | Rat model / animation            | Prajeet     | Not Started |
-| Three-rat life system            | Kavish      | Not Started |
+| Three-rat life system            | Kavish      | Implemented |
 | Enclosure / level design         | Jonothan    | Not Started |
 | Obstacles (wheel, panels, tubes) | Jonothan    | Not Started |
 | Glass / environment art          | Jonothan    | Not Started |
 | UI                               | Tavish      | Not Started |
-| Audio                            | Kavish      | Not Started |
+| Audio                            | Kavish      | Implemented |
+| Fire, electric and laser hazards | Kavish      | Implemented |
 
 ## Timeline
 

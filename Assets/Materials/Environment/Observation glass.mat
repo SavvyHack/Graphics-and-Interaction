@@ -34,8 +34,8 @@ Material:
     - _EdgeWidth: 0.002
     - _FresnelPower: 5
     - _FresnelStrength: 0.7
-    - _ShimmerScale: 12
     - _RatParallax: 0.55
+    - _ShimmerScale: 12
     - _ShimmerStrength: 0.32
     m_Colors:
     - _FresnelColor: {r: 0.8, g: 0.94, b: 1, a: 1}

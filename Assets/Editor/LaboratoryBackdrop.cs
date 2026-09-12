@@ -26,7 +26,7 @@ public static class LaboratoryBackdrop
 
         bool starter = scene.path == PrototypeAssetPaths.StarterScene;
         float left = starter ? -13f : -3.1f;
-        float right = starter ? 95f : 63.1f;
+        float right = starter ? 95f : 85f;
         float centre = (left + right) * .5f;
         float width = right - left;
         float bottom = starter ? .9f : 1.8f;

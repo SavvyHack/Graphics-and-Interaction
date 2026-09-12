@@ -25,6 +25,8 @@ Shader "ProjectRAT/Kavish/AnimatedEnergyHazard"
         _WaveHeight ("Vertex Wave Height", Range(0.0, 0.25)) = 0.035
         _WaveFrequency ("Vertex Wave Frequency", Range(1.0, 20.0)) = 7.0
         _Alpha ("Overall Alpha", Range(0.1, 1.0)) = 0.86
+        _GateMode ("Effect Mode (0 Runoff, 1 Gate)", Range(0.0, 1.0)) = 0.0
+        _ArcDistortion ("Gate Arc Distortion", Range(0.0, 0.2)) = 0.07
     }
 
     SubShader
@@ -56,6 +58,8 @@ Shader "ProjectRAT/Kavish/AnimatedEnergyHazard"
             float _WaveHeight;
             float _WaveFrequency;
             float _Alpha;
+            float _GateMode;
+            float _ArcDistortion;
 
             struct appdata
             {
@@ -101,9 +105,23 @@ Shader "ProjectRAT/Kavish/AnimatedEnergyHazard"
                 float slowPulse = 0.65 + 0.35 * sin(_Time.y * (_Speed * 1.35) + i.uv.x * 6.28318);
                 slowPulse = slowPulse * 0.5 + 0.5;
 
-                float energy = saturate(band * _Intensity * (0.65 + 0.35 * i.pulse) * slowPulse);
+                // Gate mode replaces the runoff stripes with three independently
+                // wobbling electric arcs. Both modes remain texture-free.
+                float gateTime = _Time.y * _Speed;
+                float arcA = abs(i.uv.y - (0.22 + sin(i.uv.x * 17.0 + gateTime) * _ArcDistortion));
+                float arcB = abs(i.uv.y - (0.50 + sin(i.uv.x * 22.0 - gateTime * 1.3) * _ArcDistortion));
+                float arcC = abs(i.uv.y - (0.78 + sin(i.uv.x * 14.0 + gateTime * 1.7) * _ArcDistortion));
+                float nearestArc = min(arcA, min(arcB, arcC));
+                float gateCore = 1.0 - smoothstep(_StripeWidth * 0.20, _StripeWidth, nearestArc);
+                float gateGlow = 1.0 - smoothstep(_StripeWidth, _StripeWidth * 3.2, nearestArc);
+                float gateEnergy = saturate((gateCore + gateGlow * 0.42) * _Intensity * slowPulse);
+
+                float runoffEnergy = saturate(band * _Intensity * (0.65 + 0.35 * i.pulse) * slowPulse);
+                float energy = lerp(runoffEnergy, gateEnergy, step(0.5, _GateMode));
                 fixed3 colour = lerp(_BaseColor.rgb, _EnergyColor.rgb, energy);
-                float alpha = saturate(_BaseColor.a * _Alpha + energy * 0.18);
+                float gateAlpha = saturate(0.10 + gateGlow * 0.55 + gateCore * 0.35);
+                float runoffAlpha = saturate(_BaseColor.a * _Alpha + energy * 0.18);
+                float alpha = lerp(runoffAlpha, gateAlpha * _Alpha, step(0.5, _GateMode));
 
                 return fixed4(colour, alpha);
             }

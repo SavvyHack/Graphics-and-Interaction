@@ -145,6 +145,7 @@ public class PlayerRatController : MonoBehaviour
             verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
             coyoteTimer = 0f; // consume coyote time so it can't double-jump off the same ledge
             animator?.SetTrigger(AnimJumpTrigger);
+            AudioManager.Instance?.PlayJump();
         }
     }
 

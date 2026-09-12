@@ -11,7 +11,37 @@ Read the [project specification](https://github.com/feit-comp30019/project-1-spe
 
 ## First Shader
 
-TODO - see specification for details
+# Individual Shader Report — Rat Stylized Lighting
+
+**Student:** Prajeet
+**Shader:** `RatStylizedLighting.shader`
+**Theme:** Theme 1 — Lighting and Stylised Shading
+**Shader source:** `Assets/Shaders/RatStylizedLighting.shader`
+
+## Overview
+
+For my individual shader, I developed `RatStylizedLighting.shader`, a custom handwritten Cg/HLSL vertex and fragment shader designed for the player rat in Project R.A.T. The shader belongs to **Theme 1: Lighting and Stylised Shading** and combines custom diffuse lighting, quantised toon shading, view-dependent rim lighting, ambient lighting, and Blinn-Phong specular highlights.
+
+The shader was chosen to support the game's clean, stylised visual direction while making the player rat visually distinct from the cool blue-grey enclosure environment. The rim lighting in particular helps separate the rat from surrounding platforms and objects.
+
+## Shader Implementation
+
+The vertex shader transforms each model vertex into clip space using `UnityObjectToClipPos`, while also transforming its normal into world space and calculating its world-space position. These values are passed to the fragment shader through the `v2f` structure.
+
+The fragment shader calculates the lighting using the surface normal (**N**), light direction (**L**) and camera/view direction (**V**). Diffuse lighting is calculated using the dot product between the surface normal and light direction. The result is then quantised into configurable lighting bands using `_ToonSteps`. This produces a cartoon like style to match the art theme.
+
+A configurable `_ShadowColor` is blended with the base rat colour according to the toon lighting value, allowing darker regions to have a deliberate stylised colour rather than simply becoming black.
+
+The shader also calculates a view-dependent rim factor using the relationship between the surface normal and camera direction. `_RimPower` controls the sharpness of the effect, while `_RimThreshold` controls where the rim begins appearing. Finally, Blinn-Phong specular lighting is calculated using the halfway vector between the light and view directions.
+
+## Exposed Parameters and Images
+
+The shader exposes several parameters that can be adjusted directly in Unity, including; Base Color, Shadow Color, Toon Steps, Light Strength, Rim Color, Rim Strength, Rim Power, Rim Threshold, Specular Color, Specular Strength, and Specular Power.
+
+For demonstration, screenshots will show different values for Toon Steps and rim power.
+![toon1_rimpwr4](Documentation/Images/Prajeet/toon1_rimpwr4.png)
+![toon6_rimpwr10.png](Documentation/Images/Prajeet/toon6_rimpwr10.png)
+
 
 ## Second Shader
 

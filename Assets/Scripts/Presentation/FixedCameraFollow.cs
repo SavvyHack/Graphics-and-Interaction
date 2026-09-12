@@ -25,6 +25,14 @@ public class FixedCameraFollow : MonoBehaviour
     private Quaternion fixedRotation;
     private float fixedY;
 
+    private static readonly int GlassActiveRatPosition = Shader.PropertyToID("_GlassActiveRatPosition");
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetGlassTarget()
+    {
+        Shader.SetGlobalVector(GlassActiveRatPosition, Vector4.zero);
+    }
+
     public Transform Target => target;
 
     private void Awake()
@@ -36,6 +44,7 @@ public class FixedCameraFollow : MonoBehaviour
 
     private void LateUpdate()
     {
+        UpdateGlassTarget();
         if (target == null)
             return;
 
@@ -70,6 +79,7 @@ public class FixedCameraFollow : MonoBehaviour
     {
         target = newTarget;
         velocity = Vector3.zero;
+        UpdateGlassTarget();
 
         if (snapImmediately && target != null)
         {
@@ -85,5 +95,24 @@ public class FixedCameraFollow : MonoBehaviour
             transform.position = new Vector3(newX, newY, fixedZ);
             transform.rotation = fixedRotation;
         }
+    }
+
+    // Both the prototype session and team life manager already switch this target.
+    // Publish after player movement, without material instances or scene searches.
+    private void UpdateGlassTarget()
+    {
+        if (target == null || !target.gameObject.activeInHierarchy || !isActiveAndEnabled)
+        {
+            ResetGlassTarget();
+            return;
+        }
+
+        Vector3 position = target.position;
+        Shader.SetGlobalVector(GlassActiveRatPosition, new Vector4(position.x, position.y, position.z, 1f));
+    }
+
+    private void OnDisable()
+    {
+        ResetGlassTarget();
     }
 }

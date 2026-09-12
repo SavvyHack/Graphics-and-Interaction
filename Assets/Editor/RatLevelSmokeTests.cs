@@ -105,6 +105,14 @@ public static class RatLevelSmokeTests
                 "Observation presentation is ready on first load without running the builder");
         }
         Require(player.GetComponent<CharacterController>().isGrounded, "Rat spawns on the release deck");
+        RequireGlassTarget("Glass tracks the active rat on startup");
+        // Lifecycle callbacks for this component run in Play mode, not editor captures.
+        FixedCameraFollow glassFollow = Camera.main.GetComponent<FixedCameraFollow>();
+        glassFollow.enabled = false;
+        Require(Shader.GetGlobalVector("_GlassActiveRatPosition") == Vector4.zero, "Disabling camera follow clears the glass target");
+        glassFollow.enabled = true;
+        yield return null;
+        RequireGlassTarget("Glass resumes tracking when camera follow is enabled");
         // Each gap is exercised with the existing walking speed; sprint is unnecessary.
         float[,] jumps = { {4, 0, 4.7f, 7.8f, .4f}, {8.5f,.4f,9.2f,12.3f,.8f}, {13,.8f,13.7f,16.7f,.8f}, {47,1.4f,47.7f,50.7f,2.3f}, {51,2.3f,51.7f,54.7f,3.2f}, {55,3.2f,55.7f,58.7f,4.1f} };
         for (int i = 0; i < jumps.GetLength(0); i++)
@@ -123,6 +131,7 @@ public static class RatLevelSmokeTests
             }
             Input(); wait = Wait(.7f); while (wait.MoveNext()) yield return null;
             Require(player.transform.position.y >= jumps[i,4] - .1f && player.GetComponent<CharacterController>().isGrounded, "Walking jump " + (i + 1));
+            RequireGlassTarget("Glass follows the rat after walking jump " + (i + 1));
         }
         player.Respawn(new Vector3(18, .86f, 0)); Input(Key.D);
         while (player.transform.position.x < 26) yield return null;
@@ -141,9 +150,16 @@ public static class RatLevelSmokeTests
         player.Respawn(new Vector3(40, -1.7f, 0));
         wait = Wait(.3f); while (wait.MoveNext()) yield return null;
         Require(session.RemainingRats == lives - 1 && Mathf.Abs(player.transform.position.x - 46) < .2f, "Hazard costs one rat and respawns at checkpoint");
+        RequireGlassTarget("Glass follows the replacement rat at the checkpoint");
         player.Respawn(new Vector3(61.3f, 4.16f, 0));
         wait = Wait(.25f); while (wait.MoveNext()) yield return null;
         Require(session.Finished && !player.enabled, "Exit completes the course");
+    }
+    private static void RequireGlassTarget(string name)
+    {
+        Vector4 target = Shader.GetGlobalVector("_GlassActiveRatPosition");
+        // The driver runs in Update; the global is from the preceding LateUpdate.
+        Require(target.w == 1f && Vector3.Distance(new Vector3(target.x, target.y, target.z), player.transform.position) < .2f, name);
     }
     private static void Require(bool result, string name)
     {

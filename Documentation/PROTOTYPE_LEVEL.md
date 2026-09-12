@@ -30,8 +30,24 @@ The scene contains ordinary saved GameObjects, grouped by numbered section. Move
 
 `Project R.A.T. > Apply Observation Style to Both Scenes` applies the visual treatment to the existing scene objects without regenerating platforms, triggers, or gameplay references. Both saved scenes already have the treatment. The builder also applies it when creating a new prototype. The starter scene retains the group's water shader, checkpoint flag, rat shader, and wheel, with thin muted trim on its charcoal platforms.
 
-Only the floor material uses `Unlit/Color` at RGB (0, 0, 0). The wall, charcoal platforms and muted trim have separate materials in `Assets/Materials/Environment/`. `LaboratoryBackdrop` saves non-colliding scenery behind the course: a recessed dark mirror, frame, sill, subdued light fixtures and thin weld seams that stop at the window. The opaque screen represents a one-way observation window with the observer room concealed; no scientists are shown. The front enclosure glass remains transparent, with reduced reflection brightness. Runoff retains its separate hazard colour.
-The observation glass uses a shared scene capture in the built-in render pipeline, drawn after the water. It transmits the scene with a faint cool tint, minimal refraction at its bevel, polished border highlights, and soft stationary ceiling-light reflections with camera parallax. The centre stays clear; there is no animated watery shimmer or uniform blue haze. `_ShimmerStrength` controls the ceiling reflection brightness, `_ShimmerScale` its spacing in world units, `_BaseAlpha` the transmission tint, and `_DistortionStrength` the edge refraction. These existing property names retain material compatibility; `_ShimmerSpeed` is no longer used. The single glass shader source is `Assets/Shaders/GlassEnclosure.shader`. The shared scene capture adds a framebuffer copy, so profile it on the intended target hardware.
+Only the floor material uses `Unlit/Color` at RGB (0, 0, 0). The wall, charcoal platforms and muted trim have separate materials in `Assets/Materials/Environment/`. `LaboratoryBackdrop` saves non-colliding scenery behind the course: a recessed dark mirror, frame, sill, subdued light fixtures and thin weld seams that stop at the window. The opaque screen represents a one-way observation window with the observer room concealed; no scientists are shown. The front enclosure glass remains transparent, with pale sunlight bars. Runoff retains its separate hazard colour.
+
+The observation glass uses a shared scene capture in the built-in render pipeline, drawn after the water. It transmits the scene with a faint cool tint, minimal refraction at its bevel, polished border highlights, and cartoon-style diagonal reflections: a broad light bar paired with a fine parallel highlight. The bars soften toward the bottom and fade at the pane edges to preserve gameplay readability. They shift with the controlled rat's horizontal position and jump height, including when the camera stops at its bounds. They remain still when the rat stops.
+
+`FixedCameraFollow` sends its current target's world position to the global `_GlassActiveRatPosition` in `LateUpdate` and immediately on `SetTarget`. The prototype's respawns and the team's `TavishPrototypeIntegration.ActivateRat` already use this target, so both scenes work immediately without new component hookups. Missing/inactive targets, disabled camera follow components and play-mode startup clear the global. This is a stylised reflection effect for the single active gameplay camera, not ray tracing or a light cast onto the platforms.
+
+Tune either glass material in `Assets/Materials/Environment/`:
+
+| Inspector control | Shader property | Default |
+|---|---|---|
+| Light Bar Colour / Strength | `_ShimmerColor` / `_ShimmerStrength` | Pale warm white / 0.32 |
+| Light Spacing (World Units) | `_ShimmerScale` | 12 |
+| Main Bar Half Width (World Units) | `_BarWidth` | 0.48 |
+| Bar Edge Softness (World Units) | `_BarFeather` | 0.06 |
+| Bar Diagonal Slant | `_BarSlant` | -0.55 |
+| Active Rat Reflection Movement | `_RatParallax` | 0.55 (0 makes the bars stationary) |
+
+`_BaseAlpha` controls the transmission tint and `_DistortionStrength` the edge refraction. The shader source is `Assets/Shaders/GlassEnclosure.shader`; the optional observation-style tool retains these new defaults when reapplied. For automated render and gameplay verification, set `RAT_OUTPUT` and run Unity in batch mode with `-executeMethod ActiveGlassValidation.VerifyAndPlaytest`, without `-quit` or `-nographics`. It captures both scenes, compares stationary/horizontal/jump reflections with the camera held still, checks target switching and cleanup, and runs the existing course smoke tests with live shader-target checks.
 
 `RatTrialSession` is a small replacement-ready playtest harness. It handles checkpoint respawn, three attempts, two visible waiting rats, completion/failure, and keyboard restart. A team's `PrototypeHUD` can optionally be connected to its `teamHUD` field. Replace the harness with the eventual team life system as that system becomes available; the `TrialZone` components hold the checkpoint, hazard and exit hookups in one place.
 

@@ -47,12 +47,16 @@ public static class ObservationStyle
             glass.renderQueue = 3100;
             glass.SetColor("_GlassTint", new Color(.88f, .97f, 1));
             glass.SetColor("_FresnelColor", new Color(.8f, .94f, 1));
-            glass.SetColor("_ShimmerColor", new Color(.94f, .98f, 1));
+            glass.SetColor("_ShimmerColor", new Color(1f, .98f, .91f));
             glass.SetFloat("_BaseAlpha", .06f);
             glass.SetFloat("_FresnelPower", 5);
             glass.SetFloat("_FresnelStrength", .7f);
-            glass.SetFloat("_ShimmerStrength", .075f);
+            glass.SetFloat("_ShimmerStrength", .32f);
             glass.SetFloat("_ShimmerScale", 12);
+            glass.SetFloat("_BarWidth", .48f);
+            glass.SetFloat("_BarFeather", .06f);
+            glass.SetFloat("_BarSlant", -.55f);
+            glass.SetFloat("_RatParallax", .55f);
             glass.SetFloat("_DistortionStrength", .001f);
             glass.SetFloat("_EdgeWidth", .002f);
             EditorUtility.SetDirty(glass);

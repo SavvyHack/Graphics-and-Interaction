@@ -26,17 +26,20 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _BarFeather: 0.06
+    - _BarSlant: -0.55
+    - _BarWidth: 0.48
     - _BaseAlpha: 0.06
     - _DistortionStrength: 0.001
     - _EdgeWidth: 0.002
     - _FresnelPower: 5
     - _FresnelStrength: 0.7
     - _ShimmerScale: 12
-    - _ShimmerSpeed: 0.35
-    - _ShimmerStrength: 0.075
+    - _RatParallax: 0.55
+    - _ShimmerStrength: 0.32
     m_Colors:
     - _FresnelColor: {r: 0.8, g: 0.94, b: 1, a: 1}
     - _GlassTint: {r: 0.88, g: 0.97, b: 1, a: 1}
-    - _ShimmerColor: {r: 0.94, g: 0.98, b: 1, a: 1}
+    - _ShimmerColor: {r: 1, g: 0.98, b: 0.91, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

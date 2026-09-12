@@ -9,9 +9,13 @@ Shader "ProjectRAT/Tavish/GlassEnclosure"
         [HDR] _FresnelColor ("Polished Edge Colour", Color) = (0.8, 0.94, 1.0, 1.0)
         _FresnelStrength ("Edge Reflection Strength", Range(0.0, 3.0)) = 0.7
         _FresnelPower ("Fresnel Power", Range(0.5, 8.0)) = 5.0
-        [HDR] _ShimmerColor ("Laboratory Light Colour", Color) = (0.94, 0.98, 1.0, 1.0)
-        _ShimmerStrength ("Laboratory Light Reflection", Range(0.0, 1.5)) = 0.16
+        [HDR] _ShimmerColor ("Light Bar Colour", Color) = (1.0, 0.98, 0.91, 1.0)
+        _ShimmerStrength ("Light Bar Strength", Range(0.0, 1.5)) = 0.32
         _ShimmerScale ("Light Spacing (World Units)", Range(2.0, 24.0)) = 12.0
+        _BarWidth ("Main Bar Half Width (World Units)", Range(0.05, 1.5)) = 0.48
+        _BarFeather ("Bar Edge Softness (World Units)", Range(0.01, 0.5)) = 0.06
+        _BarSlant ("Bar Diagonal Slant", Range(-1.5, 1.5)) = -0.55
+        _RatParallax ("Active Rat Reflection Movement", Range(0.0, 1.0)) = 0.55
         _DistortionStrength ("Edge Refraction", Range(0.0, 0.01)) = 0.001
         _EdgeWidth ("Polished Border Width (UV)", Range(0.0005, 0.02)) = 0.002
     }
@@ -36,6 +40,10 @@ Shader "ProjectRAT/Tavish/GlassEnclosure"
             float4 _GlassTint, _FresnelColor, _ShimmerColor;
             float _BaseAlpha, _FresnelStrength, _FresnelPower;
             float _ShimmerStrength, _ShimmerScale, _DistortionStrength, _EdgeWidth;
+            float _BarWidth, _BarFeather, _BarSlant, _RatParallax;
+            // Global, supplied by FixedCameraFollow; W is 1 while a target is available.
+            // Keep out of Properties so a material cannot override the active rat.
+            float4 _GlassActiveRatPosition;
 
             struct appdata
             {
@@ -80,15 +88,22 @@ Shader "ProjectRAT/Tavish/GlassEnclosure"
                 float border = 1.0 - smoothstep(_EdgeWidth, _EdgeWidth + aa, edge);
                 float bevel = exp2(-edge * 160.0);
 
-                // Stationary reflected ceiling panels with slight camera parallax.
-                // World spacing avoids stretching one reflection across a long enclosure.
-                float lightCoord = (input.worldPos.x + input.worldPos.y * 0.42
-                    - _WorldSpaceCameraPos.x * 0.12) / max(_ShimmerScale, 2.0);
-                float lightDistance = frac(lightCoord) - 0.5;
+                // Cartoon sunlight: a wide slash paired with a fine parallel highlight.
+                // Drive parallax from the rat itself, even while the camera is clamped.
+                // No time scroll: stopping the rat also stops the reflected bars.
+                float ratCoord = (_GlassActiveRatPosition.x
+                    + _GlassActiveRatPosition.y * _BarSlant) * _GlassActiveRatPosition.w;
+                float spacing = max(_ShimmerScale, 2.0);
+                float lightCoord = input.worldPos.x + input.worldPos.y * _BarSlant
+                    - ratCoord * _RatParallax;
+                float lightDistance = (frac(lightCoord / spacing + 0.5) - 0.5) * spacing;
+                float thinDistance = (frac((lightCoord - _BarWidth - 0.6) / spacing + 0.5) - 0.5) * spacing;
+                float feather = max(_BarFeather, fwidth(lightCoord));
                 // Unity's cube front face has V=0 at its top edge.
-                float upperFalloff = smoothstep(0.24, 0.9, 1.0 - input.uv.y);
-                float reflection = softStrip(lightDistance, 0.035, 0.075) * upperFalloff;
-                reflection += softStrip(lightDistance - 0.13, 0.004, 0.009) * upperFalloff * 0.4;
+                float upperFalloff = lerp(0.3, 1.0, smoothstep(0.08, 0.8, 1.0 - input.uv.y));
+                float reflection = softStrip(lightDistance, _BarWidth, feather);
+                reflection += softStrip(thinDistance, _BarWidth * 0.22, feather) * 0.65;
+                reflection *= upperFalloff * smoothstep(0.0, 0.025, edge);
 
                 float2 screenUV = input.grabPos.xy / input.grabPos.w;
                 float2 offset = (input.uv - 0.5) * bevel * _DistortionStrength;

@@ -27,12 +27,15 @@ Material:
     m_Floats:
     - _LightStrength: 1
     - _RimPower: 3
-    - _RimStrength: 1
+    - _RimStrength: 3
+    - _RimThreshold: 0.35
     - _SpecularPower: 24
     - _SpecularStrength: 0.3
+    - _ToonSteps: 4
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 0.3, g: 0.8, b: 1, a: 1}
+    - _RimColor: {r: 0.16470589, g: 0.16470589, b: 0.16470589, a: 1}
+    - _ShadowColor: {r: 0.25, g: 0.3, b: 0.4, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -5,7 +5,7 @@ Read the [project specification](https://github.com/feit-comp30019/project-1-spe
 ## Table of Contents
 
 - [First Shader](#first-shader)
-- [Second Shader](#second-shader)
+- [Second Shader — Tavish: Glass Enclosure Active Shader](#second-shader--tavish-glass-enclosure-active-shader)
 - [Third Shader](#third-shader)
 - [Fourth Shader](#fourth-shader)
 
@@ -43,9 +43,49 @@ For demonstration, screenshots will show different values for Toon Steps and rim
 ![toon6_rimpwr10.png](Documentation/Images/Prajeet/toon6_rimpwr10.png)
 
 
-## Second Shader
+## Second Shader — Tavish: Glass Enclosure Active Shader
 
-TODO - see specification for details
+**Student:** Tavish
+**Shader:** `GlassEnclosure.shader`
+**Theme:** Theme 2 — Surface Appearance and Procedural Effects
+**Shader source:** [`Assets/Shaders/GlassEnclosure.shader`](Assets/Shaders/GlassEnclosure.shader)
+
+### Overview and Design
+
+My shader gives the enclosure tinted transmission, polished borders and diagonal reflections that respond to the active rat. This supports Project R.A.T.'s observation theme while keeping platforms and hazards visible. A broad reflection paired with a thin highlight matches the stylised art direction. Reflections soften towards the bottom and fade near pane boundaries to preserve readability.
+
+The primary theme is **Surface Appearance and Procedural Effects**: the glass combines procedural patterns, UV masks and a captured scene texture. Rat movement drives the appearance without deforming the mesh.
+
+### Shader Implementation
+
+The Cg/HLSL vertex stage transforms positions into clip and world space, converts normals into world space, and passes UVs and projected screen coordinates to the fragment stage, which calculates the appearance.
+
+A named `GrabPass` captures the rendered scene. Glass draws at queue 3100, after water at 3000, and samples the capture with a small offset near its bevel. Multiplicative tint preserves visibility. With `Blend Off` and `ZWrite Off`, transmission and highlights are composed explicitly.
+
+The polished-edge effect combines a Fresnel-style term, `pow(1 - saturate(abs(dot(N, V))), _FresnelPower)`, with a UV border mask and an exponential bevel falloff. The view direction accounts for parallel orthographic camera rays. `fwidth` softens narrow borders and bars to reduce aliasing, while clamped screen coordinates prevent texture wrapping at framebuffer edges.
+
+For the reflections, world-space X and Y form a slanted coordinate. `frac` repeats it into bands, and `smoothstep` creates soft edges. [`FixedCameraFollow`](Assets/Scripts/Presentation/FixedCameraFollow.cs) supplies `_GlassActiveRatPosition`; subtracting the rat's position scaled by `_RatParallax` shifts the pattern during running and jumping, even when the camera is clamped. There is no time-based scrolling, so stopping the rat stops the bars. These are procedural light reflections rather than mirrored images of scene objects.
+
+### Exposed Parameters and Demonstration
+
+| Parameters | Visual control |
+|---|---|
+| `_GlassTint`, `_BaseAlpha` | Transmission colour and tint amount. |
+| `_FresnelColor`, `_FresnelStrength`, `_FresnelPower` | Edge colour, brightness and angular falloff. |
+| `_ShimmerColor`, `_ShimmerStrength` | Light-bar colour and brightness. |
+| `_ShimmerScale`, `_BarWidth`, `_BarFeather`, `_BarSlant` | Bar spacing, half-width, softness and diagonal angle. |
+| `_RatParallax` | Response to rat movement; zero fixes the pattern in world space. |
+| `_DistortionStrength`, `_EdgeWidth` | Bevel refraction and polished-border width. |
+
+The screenshots compare the same camera view. Stronger reflections emphasise the effect; defaults keep the course clearer. Running, jumping and stopping demonstrate the active response, and switching rats changes the target. The screen capture adds rendering cost, and the global target assumes one gameplay camera.
+
+![Default glass with restrained diagonal reflections and a visible enclosure interior.](Documentation/Images/Tavish/glass-default.png)
+
+*Default: `_ShimmerStrength = 0.32`, `_FresnelStrength = 0.7`, `_BarWidth = 0.48`.*
+
+![Glass with brighter, wider reflections using the same camera view.](Documentation/Images/Tavish/glass-strong-reflections.png)
+
+*Stronger reflections: `_ShimmerStrength = 0.9`, `_FresnelStrength = 1.4`, `_BarWidth = 0.85`.*
 
 ## Third Shader — Kavish: Animated Energy Hazard
 

@@ -318,3 +318,5 @@ With several obstacle types, a life system, checkpoints, art and audio all plann
 # References and Attribution
 
 Any external assets, models, textures, images, audio, tutorials, code, AI assistance or concept references used during development will be documented here as we go on.
+
+- OpenAI Codex assisted with drafting Tavish's glass shader section in `REPORT.md` from the existing shader, camera script and implementation notes, and with preparing a temporary Unity utility to capture the report's parameter-comparison screenshots. The shader implementation was not modified during this report task.

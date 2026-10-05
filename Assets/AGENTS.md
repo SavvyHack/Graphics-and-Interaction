@@ -1,0 +1,3 @@
+# Asset scope
+Read root AGENTS and Documentation/DEVELOPMENT_RULES.md. Preserve current folders, GUIDs and serialized references. Move every asset with its .meta; add unique metadata for new assets and directories. Leave TextMesh Pro third-party contents intact. Keep runtime scripts under Scripts and editor tools under Editor. Use scoped instructions in those folders before editing them.
+Scenes/materials/prefabs are implementation, not disposable generated data. Never recreate them wholesale to avoid reference repair. Existing Prototype components include live moving-platform/wheel dependencies; inspect usages before removing.

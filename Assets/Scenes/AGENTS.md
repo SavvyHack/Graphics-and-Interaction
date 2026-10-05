@@ -1,0 +1,4 @@
+# Scene editing
+Read Documentation/CURRENT_STATE.md and the relevant level brief. RatEnclosure is the existing prototype; StartScene is the original scene, not Home. BeforeLaserPuzzle copies are backups, not the three campaign stages. Level1/2/3 are future explicit authoring paths.
+Prefer Unity scene APIs and narrow saved changes. Preserve source scene and metadata when making a new level copy; give the new asset its own GUID. Do not run level regeneration to perform a small layout edit. Document new object components, serialized fields and build-list changes.
+For every stage verify one active player, one life/state owner, one camera/audio listener, safe starts/checkpoints, reachable exit and recoverable puzzle resets. Inspect the editor Play redirect when testing Home or new scenes. Build settings must contain all actual navigation targets before a feature is complete.

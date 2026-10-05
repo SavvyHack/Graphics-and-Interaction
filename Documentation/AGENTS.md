@@ -1,0 +1,3 @@
+# Documentation scope
+GAME_DESIGN is current target; README at root remains historical GDD/coursework material. DECISIONS separates user direction from proposed defaults; CURRENT_STATE records implementation evidence. Do not describe planned portals/levels/screens as implemented. Keep source/scene inspection distinct from Unity runtime checks.
+Maintain system/level docs only where they add real context; no README for every trivial folder. Keep links relative, point to real files and preserve original concept images/attributions. Plans have explicit status; no automatic-test requirement. Archived September verification statements are historical, not current results.

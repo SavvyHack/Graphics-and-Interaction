@@ -1,0 +1,4 @@
+# Runtime scripting
+Read Documentation/ARCHITECTURE.md and the relevant Documentation/systems file. Existing classes are global; do not mass-namespace them or rename MonoBehaviour identities. Prefer small components and serialized references. Preserve field compatibility; use FormerlySerializedAs for necessary renames.
+GameManager owns attempt outcome; RatLifeManager owns lives/checkpoints; PlayerRatController owns movement. Only one life system may run. Do not enable RatTrialSession alongside them. Extend owners before adding parallel managers. Pause, death, teleport and room reset must agree on input, motion and state.
+No new automated test suite is required. Preserve Scripts/Testing and optional editor checks. Implement UI/scene wiring as part of a feature; do not claim success from null-safe methods with no assigned references.

@@ -1,0 +1,25 @@
+{
+  "teamName": "Chocolate Bananas",
+  "teamMembers": [
+    {
+      "name": "Kavish Chandra",
+      "github": "Kav1sh-11",
+      "email": "kavishc@student.unimelb.edu.au"
+    },
+    {
+      "name": "Prajeet Nichenametla",
+      "github": "cryptic-jeetus",
+      "email": "pnichenametl@student.unimelb.edu.au"
+    },
+    {
+      "name": "Jonathan Sumantri",
+      "github": "Jono-Uni",
+      "email": "jsumantri@student.unimelb.edu.au"
+    },
+    {
+      "name": "Tavish Balyan",
+      "github": "SavvyHack",
+      "email": "tbalyan@student.unimelb.edu.au"
+    }
+  ]
+}

@@ -38,11 +38,18 @@ These are tuning targets, not measured durations. Detailed sequences, reset rule
 ## Complete-game requirements
 Home: New Game, Continue when available, Level Select, Settings, Controls, Credits; desktop Quit only where meaningful. Pause: Resume, Settings, Controls, Reset Puzzle where supported, Restart Level and Home. Confirm destructive resets. Win: Next Level / Replay / Home; Level 3 instead shows a brief escape ending and credits/replay access. Loss: explicit retry/home choice.
 Settings: Master, Music and SFX volume, mute, immediate preview and persistent preferences; accessible through home and pause. Use consistent keyboard/mouse focus and readable labels. Pause freezes hazards and movement, while menu input/audio continue appropriately.
-HUD: three visible life icons, level/checkpoint, contextual interaction prompts and clear portal pair labels. Introduce controls inside safe gameplay, not only on a help page. No required scoring, timer or collectibles for completion.
+HUD: three visible life icons, level/checkpoint, contextual interaction prompts, clear portal pair labels, attempt coins and wallet with distinct labels. Introduce controls inside safe gameplay, not only on a help page. Coins are optional cosmetic currency; no score, time limit or collectible quota gates completion.
 
 ## Polish priorities
 Required: responsive movement; reliable respawn; safe portal landings; readable hazards; visible switch-to-gate connections; music/ambient loop and distinct event cues; short transitions; no dead-end menu flows; camera framing that reveals puzzle relationships; credits and asset attribution; a browser build playable from beginning to ending.
 After those work: jump buffering, optional hints after repeated failures, reduced motion/flash options, cosmetic rat differences and optional best-time replay records. Optional objectives must not block exits or inflate the three-level scope.
 
 ## Out of scope for first completion
+
+The following scope remains unchanged by the requested extensions below.
 Multiplayer, AI companion rats, elemental character swaps, free-placement portals, portal render textures, crate teleportation, inventory, combat, online services and a broad power-up roster.
+
+## Requested profile and presentation extensions
+Implement [coins/cosmetics](systems/coins-and-cosmetics.md), [Settings](systems/settings-page.md), [Help/lore](systems/help-and-lore.md), [survivor victory](systems/victory-screen.md), [Statistics](systems/statistics.md) and selected [extra hazards](systems/extra-hazards-and-obstacles.md). Home includes Wardrobe, Help and Statistics; Controls is a shortcut to Help's Controls tab. These extend the earlier requirements and remain unimplemented targets.
+
+New Game resets campaign progress only; lifetime coins, outfits, statistics and settings survive. Separately confirmed Erase All Data clears the profile/preferences. Extra levels can extend the ordered catalog; the initial campaign remains three levels. Preserve the prototype's rat/laboratory style. Follow [prototype retirement](systems/prototype-retirement.md) before removing superseded content. Help does not commit the deferred power-ups to implementation.

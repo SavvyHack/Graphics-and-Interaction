@@ -27,6 +27,9 @@ Evidence: source and serialized assets inspected, no Unity execution. This is th
 - The active build does not start on Home. Editor redirect and old validation expectations must change together when Home is implemented.
 
 ## Next milestone
+
+### Specification extension — 5 October 2026
+Added target specifications for coins/cosmetics, detailed settings, Help/lore, survivor victory, statistics and extra obstacles; see [feature index](../OPEN-FIRST.md) and [active extension plan](plans/active/02-gameplay-and-presentation-specifications.md). The missing OPEN-FIRST.md is now a development entry point. This update changes documentation only: no runtime implementation, scene wiring, art/audio changes or prototype deletion. Unity compilation/import and playtesting remain unverified. Referenced prototype components and existing managers require a dependency/replacement audit before removal.
 Execute [01-playable-foundation](plans/active/01-playable-foundation.md): HUD/outcomes, home/pause/audio settings, explicit single-level flow, and a safe portal proof room. Then author the full three-level campaign. See [roadmap](ROADMAP.md).
 
 ## Verification limits

@@ -5,9 +5,9 @@ Status: target specification. Existing PrototypeHUD/AudioManager are starting po
 ## Screens and navigation
 | Screen | Required controls/behaviour |
 |---|---|
-| Home | New Game; Continue only with progress; Level Select; Settings; Controls; Credits; platform-appropriate Quit |
+| Home | New Game; Continue only with progress; Level Select; Wardrobe; Statistics; Settings; Help (including Controls); Credits; platform-appropriate Quit |
 | Level Select | Three labelled levels, clear locked/unlocked/completed states, Back |
-| HUD | Three rat icons, level/checkpoint, short contextual prompts; no permanent debug overlay |
+| HUD | Three rat icons, level/checkpoint, attempt coins and wallet with distinct labels, short contextual prompts; no permanent debug overlay |
 | Pause | Resume, Settings, Controls, Reset Puzzle if supported, Restart Level, Home |
 | Settings | Master/Music/SFX sliders, mute, numeric percentage, Restore Defaults, Back |
 | Controls | Existing move/jump/sprint plus portal/interact, pause and restart; Back |
@@ -19,6 +19,8 @@ Status: target specification. Existing PrototypeHUD/AudioManager are starting po
 Escape pauses/resumes; from a sub-menu it returns one level rather than accidentally resuming gameplay. Settings opened from pause return to pause. Confirm New Game when progress exists, Restart Level and Home when they discard the current attempt. Focus defaults to the safe/cancel action for confirmations. New Game resets campaign progress but preserves audio preferences. No unusable Quit button in WebGL.
 
 ## Input and layout
+
+Detailed contracts: [Settings](settings-page.md), [Help](help-and-lore.md), [Wardrobe](coins-and-cosmetics.md), [Statistics](statistics.md) and [victory variants](victory-screen.md). Controls opens Help's Controls tab. Home pages have Back and restored keyboard focus. New Game preserves lifetime economy/statistics as well as audio; only separately confirmed Erase All Data clears them.
 Use existing UGUI/TMP packages. One compatible EventSystem and one owner for navigation; prevent simultaneous gameplay input. Visible keyboard focus, mouse support, readable text and 16:9 plus narrower-window checks. Keep important UI away from browser edges and show loading feedback during transitions. UI should not depend on a running simulation clock.
 
 ## Audio settings

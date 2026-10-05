@@ -1,6 +1,8 @@
 # Development rules
 
 ## Before editing
+Follow [Git workflow](GIT_WORKFLOW.md): one branch and PR per feature, with explicit user permission for each commit, push, PR creation and merge. Prepare concrete changes for review before asking; implementation requests are not publication permission. Preserve pre-existing uncommitted work.
+
 Read root and scoped AGENTS instructions; inspect affected scene/component references and current user changes. Pick a bounded feature with observable completion criteria. Preserve existing asset paths and original GDD/report attribution. Keep design intent separate from actual implementation.
 
 ## Unity changes

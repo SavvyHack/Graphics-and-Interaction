@@ -8,6 +8,9 @@ Link exact system and level documents. Distinguish confirmed requirements and pr
 ## Current evidence
 List actual scripts, scene objects, serialized fields and limitations.
 
+## Branch and delivery approvals
+Follow [Git workflow](../GIT_WORKFLOW.md). Record the dedicated feature branch, intended base and any prerequisite PRs. Track each action separately: commit, push, PR creation (including draft), merge. Initially all are pending user permission. Record the exact authorized scope when permission is given; do not infer approval of subsequent actions. Include actual commit hashes/PR URL only after authorized execution. When copying this template into active/ or completed/, change the workflow link to `../../GIT_WORKFLOW.md`.
+
 ## Changes
 List runtime scripts, editor tools, assets, scene wiring and documentation. Identify anything a tool will overwrite.
 

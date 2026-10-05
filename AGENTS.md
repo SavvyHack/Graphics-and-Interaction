@@ -7,6 +7,8 @@
 - Read applicable nested `AGENTS.md` files in every directory you edit, including when your working directory is the repository root.
 
 ## Scope and authority
+Follow [Documentation/GIT_WORKFLOW.md](Documentation/GIT_WORKFLOW.md): each feature uses a separate branch and a pull request before merging. Every commit, push, PR creation (including drafts), and merge requires explicit user permission covering that specific action. Feature implementation requests do not grant these permissions. Prepare reviewable changes first; never automatically publish or merge, enable auto-merge, or treat approval of one action as approval of the next.
+
 User instructions override repository defaults. Confirmed direction: one active player, three puzzle levels inspired by Fireboy and Watergirl, a portal mechanic, home screen and audio settings. Exact layouts and portal rules are proposed defaults, not a claim the team has approved them. Follow `Documentation/DECISIONS.md`; do not copy old concept layouts or implement every pictured power-up automatically. Preserve the rat/laboratory identity and three-rat lives unless the user changes them.
 
 ## Unity integrity

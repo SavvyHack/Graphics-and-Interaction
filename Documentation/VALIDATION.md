@@ -22,7 +22,10 @@ If Unity is unavailable, run only honest static checks (paths, metadata, referen
 | Visuals | Rat stays visible, glass does not conceal controls, hazard state readable without colour/audio alone |
 | WebGL | Browser launch, first-gesture audio, input focus after tab switch, storage fallback, loading, resize and acceptable target-device performance |
 
-## Existing tools
+## Extended feature checks
+Use the acceptance checklists in [coins/cosmetics](systems/coins-and-cosmetics.md), [Settings](systems/settings-page.md), [Help](systems/help-and-lore.md), [victory](systems/victory-screen.md), [statistics](systems/statistics.md), [extra hazards](systems/extra-hazards-and-obstacles.md) and [retirement](systems/prototype-retirement.md). Include duplicate events, death/reset/retry/relaunch, purchase consistency, interrupted-attempt recovery, all survivor variants, optional-route solvability and browser audio/storage. Record observed results separately from unchecked requirements.
+
+## Optional validation tools
 Project R.A.T. > Validate Project References and Game Systems > Validate Game Systems may help. Read the implementations before use: old tools assume the prototype layout/build entry and some batch suites exercise the legacy harness. Do not run builders as validation. Do not mandate old smoke suites for unrelated documentation changes; preserve them for useful future checks.
 
 For each milestone, record date, Unity version, scene/build, exact scenarios, observed result and remaining issues in the plan. Never reuse September's historical “passed” statement for a new snapshot.

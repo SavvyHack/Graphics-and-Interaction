@@ -28,5 +28,8 @@ Proposed `PortalPair`/`PortalEndpoint` components provide pairing, validation an
 
 Use existing audio entry points where possible. If making audio persistent, move it to a dedicated object: current AudioManager sits with gameplay managers, so DontDestroyOnLoad on that whole object would also preserve stale gameplay state. Ensure exactly one service and one AudioListener after transitions. Use one UI EventSystem per active UI context with compatible input modules.
 
-## Presentation/rendering constraints
+## Planned profile integration
+One shared persistence owner coordinates campaign unlocks, collected coin IDs, wallet/purchases, equipped design and statistics/attempt journal. Extend accepted life/outcome events rather than introducing duplicate gameplay owners. Pickups, purchases and terminal outcomes are idempotent logical transactions. UI reads profile/result snapshots; cosmetics never modify physics. See [coins](systems/coins-and-cosmetics.md), [statistics](systems/statistics.md) and [prototype retirement](systems/prototype-retirement.md). These are proposed boundaries, not existing classes.
+
+## Rendering continuity
 GlassEnclosure uses built-in scene capture/GrabPass and the global `_GlassActiveRatPosition`. Preserve camera cleanup and target updates. Imported/third-party TMP content is separate from project shaders. Avoid an unrequested URP conversion, renaming serialized class identities, or reassigning materials globally.

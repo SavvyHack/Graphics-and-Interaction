@@ -29,3 +29,8 @@ Use the acceptance checklists in [coins/cosmetics](systems/coins-and-cosmetics.m
 Project R.A.T. > Validate Project References and Game Systems > Validate Game Systems may help. Read the implementations before use: old tools assume the prototype layout/build entry and some batch suites exercise the legacy harness. Do not run builders as validation. Do not mandate old smoke suites for unrelated documentation changes; preserve them for useful future checks.
 
 For each milestone, record date, Unity version, scene/build, exact scenarios, observed result and remaining issues in the plan. Never reuse September's historical “passed” statement for a new snapshot.
+
+## Current campaign developer checks (6 October)
+Use `CampaignValidation.RunPlayChecks` as a Unity batch executeMethod without `-quit`; it exits on completion and uses an isolated profile. It first checks saved references and transactions, then exercises menus, selected real-input traversal sections, failure/retry, portals/crates, progression and survivor variants. `ReferenceRouteChecks` covers the imported augments and shuttles. Generated images/logs belong in ignored Logs. Do not run the authoring tools as validators.
+
+Manual additions: continuously complete both five-tier reference stages; die/reset at each checkpoint, test shield exclusions and augments expiring, collect optional raised tokens, verify cosmetic accessories on waiting rats, and navigate the new Help content by keyboard/mouse. Check all five later stages end-to-end and all UI at browser sizes. Install matching Unity WebGL support before attempting browser acceptance; it is absent on the current machine. Never claim a completed assessed particle effect while only VFX sockets are present.

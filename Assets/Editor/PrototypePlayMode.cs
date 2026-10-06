@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 [InitializeOnLoad]
 public static class PrototypePlayMode
 {
-    public const string ScenePath = PrototypeAssetPaths.PrototypeScene;
-    private const string MenuPath = "Project R.A.T./Start Play Mode in Prototype";
+    public const string ScenePath = "Assets/Scenes/Home.unity";
+    private const string MenuPath = "Project R.A.T./Start Play Mode in Home";
     // Project-specific preference, defaulting on for a fresh supervisor checkout.
     private static string PreferenceKey => "ProjectRAT.PrototypePlayMode." + Application.dataPath;
 
@@ -20,16 +20,17 @@ public static class PrototypePlayMode
 
     private static void Configure()
     {
-        if (RatLevelSlots.IsLevelSlot(SceneManager.GetActiveScene().path) ||
+        string activePath = SceneManager.GetActiveScene().path;
+        if (activePath == ScenePath || System.Array.IndexOf(CampaignCatalog.Scenes, activePath) >= 0 || RatLevelSlots.IsLevelSlot(activePath) ||
             !EditorPrefs.GetBool(PreferenceKey, true))
         {
             EditorSceneManager.playModeStartScene = null;
             return;
         }
-        var scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
+        var scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) ?? AssetDatabase.LoadAssetAtPath<SceneAsset>(PrototypeAssetPaths.PrototypeScene);
         if (scene == null)
         {
-            Debug.LogError("The saved prototype scene is missing: " + ScenePath);
+            Debug.LogError("The saved entry scene is missing: " + ScenePath);
             return;
         }
         EditorSceneManager.playModeStartScene = scene;

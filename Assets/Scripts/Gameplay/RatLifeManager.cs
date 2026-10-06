@@ -37,8 +37,12 @@ public class RatLifeManager : MonoBehaviour
 
     public int LivesRemaining => livesRemaining;
     public int MaxLives => 3;
+    public int EntryLives { get; private set; } = 3;
     public int LastCheckpointNumber => lastCheckpointNumber;
     public bool Finished => finished;
+    public bool Invulnerable => invulnerable;
+    public PlayerRatController Player => player;
+    private PuzzleRoom[] rooms;
 
     public event Action<int> OnLifeLost;
     public event Action<int> OnCheckpointChanged;
@@ -46,6 +50,7 @@ public class RatLifeManager : MonoBehaviour
 
     private void Awake()
     {
+        rooms = FindObjectsByType<PuzzleRoom>(FindObjectsSortMode.None);
         if (player == null)
             player = FindFirstObjectByType<PlayerRatController>();
 
@@ -65,7 +70,9 @@ public class RatLifeManager : MonoBehaviour
             return;
         }
 
-        livesRemaining = 3;
+        var campaign = FindFirstObjectByType<CampaignSession>();
+        EntryLives = campaign != null ? CampaignProfile.StartingRats(campaign.LevelIndex) : 3;
+        livesRemaining = EntryLives;
         finished = false;
         lastCheckpointNumber = 0;
         lastCheckpointPosition = startPoint != null ? startPoint.position : player.transform.position;
@@ -73,7 +80,7 @@ public class RatLifeManager : MonoBehaviour
         if (startPoint != null)
             player.Respawn(lastCheckpointPosition);
 
-        SetWaitingRatsVisible(true);
+        RefreshWaitingRats();
         cameraFollow?.SetTarget(player.transform, true);
         hud?.SetRemainingRats(livesRemaining);
         hud?.SetCheckpoint(0);
@@ -106,7 +113,8 @@ public class RatLifeManager : MonoBehaviour
     /// </summary>
     public void OnRatDied()
     {
-        if (finished || invulnerable || player == null)
+        if (finished || invulnerable || player == null ||
+            (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.GameState.Playing))
             return;
 
         livesRemaining = Mathf.Max(0, livesRemaining - 1);
@@ -114,14 +122,7 @@ public class RatLifeManager : MonoBehaviour
         hud?.SetRemainingRats(livesRemaining);
         AudioManager.Instance?.PlayRatLost();
 
-        // When lives drop from 3 -> 2, Rat 2 leaves the waiting area.
-        // When lives drop from 2 -> 1, Rat 3 leaves the waiting area.
-        int releasedWaitingRat = 2 - livesRemaining;
-        if (waitingRats != null && releasedWaitingRat >= 0 && releasedWaitingRat < waitingRats.Length)
-        {
-            if (waitingRats[releasedWaitingRat] != null)
-                waitingRats[releasedWaitingRat].SetActive(false);
-        }
+        RefreshWaitingRats();
 
         if (livesRemaining <= 0)
         {
@@ -132,9 +133,27 @@ public class RatLifeManager : MonoBehaviour
         }
 
         player.Respawn(lastCheckpointPosition);
+        ResetCurrentRoom();
         cameraFollow?.SetTarget(player.transform, true);
         StartCoroutine(InvulnerabilityWindow());
         OnRatRespawned?.Invoke();
+    }
+
+    private void ResetCurrentRoom()
+    {
+        foreach (PuzzleRoom room in rooms)
+            if (room != null && room.CheckpointNumber == lastCheckpointNumber) room.ResetRoom();
+    }
+
+    public void ResetPuzzle()
+    {
+        if (finished || player == null) return;
+        player.GetComponent<RatPowerups>()?.ResetPowers();
+        player.Respawn(lastCheckpointPosition);
+        ResetCurrentRoom();
+        cameraFollow?.SetTarget(player.transform, true);
+        StopAllCoroutines();
+        StartCoroutine(InvulnerabilityWindow());
     }
 
     public void MarkFinished()
@@ -151,15 +170,10 @@ public class RatLifeManager : MonoBehaviour
         invulnerable = false;
     }
 
-    private void SetWaitingRatsVisible(bool visible)
+    private void RefreshWaitingRats()
     {
-        if (waitingRats == null)
-            return;
-
-        foreach (GameObject rat in waitingRats)
-        {
-            if (rat != null)
-                rat.SetActive(visible);
-        }
+        if (waitingRats == null) return;
+        for (int i=0; i<waitingRats.Length; i++)
+            if (waitingRats[i] != null) waitingRats[i].SetActive(i >= MaxLives-livesRemaining);
     }
 }

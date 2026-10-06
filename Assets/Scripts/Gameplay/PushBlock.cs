@@ -42,4 +42,9 @@ public class PushBlock : MonoBehaviour
         Physics.SyncTransforms();
         return allowed * Mathf.Sign(delta);
     }
+    public void ResetToOrigin()
+    {
+        body.position = origin;
+        transform.position = origin;
+    }
 }

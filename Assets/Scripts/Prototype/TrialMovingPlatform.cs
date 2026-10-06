@@ -13,7 +13,7 @@ public class TrialMovingPlatform : MonoBehaviour
     private void Awake() { origin = transform.position; }
     private void Update()
     {
-        elapsed += Time.deltaTime;
+        elapsed += Time.deltaTime * RatPowerups.WorldScale;
         Vector3 next = origin + travel * (0.5f - 0.5f * Mathf.Cos(elapsed * Mathf.PI * 2f / period));
         Delta = next - transform.position;
         transform.position = next;

@@ -25,3 +25,6 @@ The [feature index](../OPEN-FIRST.md) links chosen defaults: 20 permanent unique
 
 ## Evidence reporting
 Use “source exists”, “serialized in scene”, “checked in Unity” and “playtested” separately. Historical docs describing successful checks are not evidence that this uploaded snapshot passes now. Never turn a proposed behaviour into a CURRENT_STATE success merely because documentation exists.
+
+## 6 October 2026 - confirmed campaign update
+User confirmed seven total levels and one local branch for this combined update. Then requested first two layouts from SavvyHack/Graphics-and-Interaction, retaining local aesthetics, active shaders and tokens. Required source augments are included to preserve solvability. Source commit 11bf1fb1e1a05e778ecbed0d6a9e4beb3ec54ba9. Stable save IDs are retained. Local assignment spec.md is ignored at user request. Commits, publishing and merges remain separately permissioned.

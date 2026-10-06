@@ -8,9 +8,7 @@ Project files are grouped under `Assets/Scenes`, `Assets/Scripts`, `Assets/Shade
 
 ## Working Title
 
-**Project R.A.T.** *(working title --- final name TBD)*
-
-Possible meanings: - **Research Animal Trials** - **Rapid Augmentation Testing** - **Rodent Advancement Technology**
+**Project R.A.T.**
 
 ------------------------------------------------------------------------
 
@@ -83,23 +81,9 @@ The camera is fixed in a single 2.5D side-on position, as though looking through
 |:----------------------------|:------------------|
 | A / D or Left / Right Arrow | Move left / right |
 | Space                       | Jump              |
-| (Optional) Shift            | Sprint            |
+| E                           | Use powerup       |
 
 Controls are intentionally minimal, in keeping with a fixed 2.5D platformer where movement is the core mechanic.
-
-## Progression
-
-The enclosure is divided into a sequence of connected sections, each introducing or recombining one or two obstacle types (see Section 4). Difficulty increases gradually as sections are combined:
-
-``` mermaid
-flowchart TD
-    A[Start] --> B[Section 1 - Basic Jumps]
-    B --> C[Section 2 - Tubes + ramps]
-    C --> D[Section 3 - Spinning wheel]
-    D --> E[Section 4 - Sliding platforms]
-    E --> F[Section 5 - Combined obstacles]
-    F --> G[Exit]
-```
 
 The player begins with **three rats**, which function as lives. A rat "dies" when it falls into a hazard (e.g. water, a crusher, or a pit) or is caught by a moving obstacle. When a rat dies, the next rat resumes from the most recent checkpoint. If all three rats die, the attempt restarts from the beginning of the enclosure.
 
@@ -112,7 +96,7 @@ Rat 1 → dies → Rat 2 → dies → Rat 3 → reaches Exit → ATTEMPT SUCCESS
 ALL RATS LOST → ATTEMPT FAILED → RESTART FROM BEGINNING
 ```
 
-There is no scoring system; the primary goal is reaching the exit with at least one rat remaining. This keeps the win/lose state simple and easy to communicate through UI (see Section 6).
+There is no scoring system, the primary goal is reaching the exit with at least one rat remaining. This keeps the win/lose state simple and easy to communicate through UI (see Section 6). However, there are collectible coins which can unlock cosmetic options
 
 ### Core gameplay loop:
 
@@ -141,8 +125,6 @@ There is no scoring system; the primary goal is reaching the exit with at least 
 ## Game World
 
 The game world is **2.5D**: characters and props are modelled in 3D, but gameplay and collision are restricted to a single movement plane, viewed from a fixed camera outside the glass. This follows the "restrict gameplay to two axes, but render a 3D environment" approach.
-
-The world is a **single continuous glass enclosure**, rather than separate levels with loading breaks. It is divided into connected sections (see Section 3, Progression) that the camera moves through as the active rat progresses. There is no map or minimap, since the enclosure is small enough to be understood visually as the player moves through it.
 
 ![Level 1 design](Documentation/Images/Level1.png)
 

@@ -1,3 +1,5 @@
+> 6 October update: the seven-level implementation supersedes the early three-level sequencing below. See [CURRENT_STATE](CURRENT_STATE.md) and [adaptation plan](plans/active/05-reference-level-adaptation.md) for verified work and remaining tasks.
+
 # Development roadmap
 
 Requested extensions are tracked in the [active feature plan](plans/active/02-gameplay-and-presentation-specifications.md). Add settings/Help and shared profile accounting during foundation, prove one coin/purchase/outfit end to end before populating levels, and include stats/survivor outcomes in the Level 1 slice. Author optional coin routes and selected extra hazards with each level; finish outfits/lore/presentation during polish. These are full-game targets, not completed items. Retire prototype content only after replacements pass reference and gameplay checks.

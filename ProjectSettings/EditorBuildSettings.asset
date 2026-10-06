@@ -6,8 +6,35 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Home.unity
+    guid: 6534c80c8e0666f49bfd95253768a1b7
+  - enabled: 1
+    path: Assets/Scenes/AugmentationLab.unity
+    guid: 48bec3bd747e4cdfa69ab9cfdaced8ce
+  - enabled: 1
+    path: Assets/Scenes/ReactorDivide.unity
+    guid: 346a4891d3ee48609b86f3c36104f225
+  - enabled: 1
+    path: Assets/Scenes/RelayArchive.unity
+    guid: f685098b7df498f4e902c8470f1f90d8
+  - enabled: 1
+    path: Assets/Scenes/CoolantFoundry.unity
+    guid: 0df13afa3df4fa04b814a96cddd769b3
+  - enabled: 1
+    path: Assets/Scenes/ScannerGallery.unity
+    guid: c1e3a9109227fba4c9e0295bd6acceb5
+  - enabled: 1
+    path: Assets/Scenes/ContainmentCore.unity
+    guid: 64a5d0931d056914a96bc7a8f6d70649
+  - enabled: 1
+    path: Assets/Scenes/EscapeSpire.unity
+    guid: ded67c172b8ef2d4ea8fe0aa0f9fddbb
+  - enabled: 0
     path: Assets/Scenes/RatEnclosure.unity
     guid: 2b2898437f730ab42b15796121261e47
+  - enabled: 0
+    path: Assets/Scenes/TransferWorks.unity
+    guid: 6c9bf998aa3f52444bbe9a4fb51e00eb
   - enabled: 0
     path: Assets/StartScene.unity
     guid: 06cbe14e58ef1404d920a5b1f51db1ff

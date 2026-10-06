@@ -1,5 +1,13 @@
 # Coins and rat cosmetics
 
+## Implementation update - 6 October 2026
+CampaignProfile/CoinPickup implement 140 permanent IDs (20 per stage). CampaignUI supplies Shop and Wardrobe, RatCosmetic applies colour/scarf/vest to active and waiting rats. Replacement stages retain enclosure/transfer IDs. Cyan augment stations are separate temporary gameplay pickups.
+
+Coin update (user direction, 6 October 2026): coins respawn on every new attempt and each pickup adds one coin to `CampaignProfile.Data.earned`. `RatAttempt.pickedCoins` stops a coin paying twice within one attempt. `Data.coins` still records unique discoveries for the map's `n/20 unique coins` count. Wallet = earned - spent. Old profiles migrate with `earned = max(earned, coins.Count)`, so existing balances and outfits are preserved. Before this change, every collected ID stayed hidden forever, so replayed levels (including level 1) looked empty. This supersedes the "no respawn / no farming" rule below. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification; not implemented or verified. User requested collectible coins and purchasable rat outfits/designs. The economy below is the chosen implementation default, tunable after playtesting.
 
 ## Collection and economy

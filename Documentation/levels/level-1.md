@@ -1,3 +1,5 @@
+> Historical three-stage proposal. See the [active seven-stage campaign](README.md) for current scene order and replacement layouts.
+
 # Level 1 — Transfer Training
 
 Status: proposed blockout; target 3–5 minutes for a first clear.

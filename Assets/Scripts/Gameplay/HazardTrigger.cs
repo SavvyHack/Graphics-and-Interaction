@@ -10,6 +10,7 @@ using UnityEngine;
 public class HazardTrigger : MonoBehaviour
 {
     [SerializeField] private RatLifeManager lifeManager;
+    public bool bypassShield;
 
     private void Reset()
     {
@@ -36,7 +37,13 @@ public class HazardTrigger : MonoBehaviour
 
     private void TryKill(Collider other)
     {
-        if (other.GetComponentInParent<PlayerRatController>() != null)
-            lifeManager?.OnRatDied();
+        var player = other.GetComponentInParent<PlayerRatController>();
+        if (player == null || lifeManager == null || lifeManager.Invulnerable || lifeManager.Finished ||
+            (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.GameState.Playing)) return;
+        var powers = player.GetComponent<RatPowerups>();
+        // A phasing rat passes through machinery and energy; coolant and falls (bypassShield) still count.
+        if (!bypassShield && powers != null && powers.Has(RatAugment.Phase)) return;
+        if (!bypassShield && powers != null && powers.AbsorbHit()) return;
+        lifeManager.OnRatDied();
     }
 }

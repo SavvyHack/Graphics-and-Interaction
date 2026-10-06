@@ -12,10 +12,11 @@ public static class ProjectValidation
     public static void Validate()
     {
         var firstScene = EditorBuildSettings.scenes.FirstOrDefault(scene => scene.enabled);
-        if (firstScene == null || firstScene.path != PrototypeAssetPaths.PrototypeScene)
-            throw new Exception("The prototype must remain the first enabled build scene.");
+        string entry = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/Home.unity") != null ? "Assets/Scenes/Home.unity" : PrototypeAssetPaths.PrototypeScene;
+        if (firstScene == null || firstScene.path != entry)
+            throw new Exception("Unexpected first enabled build scene; expected " + entry);
 
-        foreach (string path in new[] { PrototypeAssetPaths.PrototypeScene, PrototypeAssetPaths.StarterScene })
+        foreach (string path in EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).Concat(new[] { PrototypeAssetPaths.StarterScene }).Distinct())
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(path) == null)
                 throw new Exception("Missing scene: " + path);

@@ -1,5 +1,11 @@
 # UI and audio
 
+## Implementation update - 6 October 2026
+CampaignUI supplies Home, Pause, Failure, map, Help, Shop/Wardrobe, Settings, Statistics and survivor outcomes. AudioManager routes saved volume settings to event cues and a quiet generated ambient loop. Pause/menu flow and displays passed developer checks. Human listening, keyboard-only browsing at all resolutions and browser user-gesture audio remain to check. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification. Existing PrototypeHUD/AudioManager are starting points, not a complete menu system. Main scene HUD references are currently empty.
 
 ## Screens and navigation

@@ -28,6 +28,8 @@ public static class RatLevelSmokeTests
     // Do not configure the launch scene here; the editor startup hook must do it.
     public static void RunFromStarter()
     {
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/Home.unity") != null)
+            throw new Exception("This historical smoke scenario requires the retired prototype startup flow. Use the campaign checks for Home; Run remains available for the legacy harness.");
         // Batch executeMethod runs before the first editor update. A supervisor
         // presses Play after startup callbacks and asset import have completed.
         EditorApplication.delayCall += () =>

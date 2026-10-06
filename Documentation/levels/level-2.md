@@ -1,3 +1,5 @@
+> Historical three-stage proposal. See the [active seven-stage campaign](README.md) for current scene order and replacement layouts.
+
 # Level 2 — Relay Chambers
 
 Status: proposed blockout; target 5–7 minutes. Introduces persistent switches plus route ordering, with one forgiving moving-platform crossing.

@@ -1,5 +1,11 @@
 # Help page, field guide and lore
 
+## Implementation update - 6 October 2026
+CampaignUI.ShowHelp implements Controls, Field guide and Story, reachable from Home and Pause. The guide now describes both reference layouts, all six temporary augments, duration/fuel, shield exclusions, cyan stations versus gold tokens, and later portal/crate stages. Help no longer claims powers are deferred. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification. User requested main-menu help explaining power-ups and the game's background. Lore text below is original proposed in-game copy, available for implementation.
 
 ## Navigation and presentation

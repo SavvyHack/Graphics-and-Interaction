@@ -1,5 +1,11 @@
 # Victory screens and surviving rats
 
+## Implementation update - 6 October 2026
+CampaignSession snapshots the outcome once; CampaignUI renders 1/2/3-survivor text and rat previews. Stage seven is final. Replay/Next/Home are wired. All three variants passed developer runtime checks, but the exterior tableau is a simple preview, not a cinematic. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification. RatLifeManager exposes LivesRemaining; GameManager has a win entry point, but the existing HUD is not wired. Extend these owners rather than creating another win/life system.
 
 ## Outcome rules

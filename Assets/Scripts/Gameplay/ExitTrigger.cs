@@ -17,6 +17,6 @@ public class ExitTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponentInParent<PlayerRatController>() != null)
-            GameManager.Instance?.WinGame();
+            GameManager.Instance?.RequestWin();
     }
 }

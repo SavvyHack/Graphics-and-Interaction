@@ -1,35 +1,26 @@
-# Architecture
+# Runtime architecture
 
-## Actual uploaded implementation
-Unity 6000.3.18f1; built-in rendering (`GraphicsSettings.m_CustomRenderPipeline` is zero; no URP package in manifest). Runtime scripts use global classes without namespaces. New Input System is installed; player input reads Keyboard.current directly. UGUI and TextMesh Pro are available. No game-specific ScriptableObject configuration classes were found.
+Unity 6000.3.18f1, built-in rendering, existing Input System and UGUI/TextMesh Pro packages. No new dependencies or rendering migration.
 
-| Owner | Existing responsibility | Important coupling |
-|---|---|---|
-| `Assets/Scripts/Gameplay/PlayerRatController.cs` | CharacterController movement, sprint, coyote jump, plane lock, pushing, respawn | PushBlock, TrialMovingPlatform.Delta, AudioManager |
-| `Assets/Scripts/Gameplay/RatLifeManager.cs` | Three lives, monotonically advancing checkpoint, waiting props, respawn immunity | Player, camera, optional HUD, GameManager |
-| `Assets/Scripts/Gameplay/GameManager.cs` | Playing/Won/Lost, restart, outcome audio/events | RatLifeManager, optional HUD; no pause/menu state yet |
-| `Checkpoint`, `HazardTrigger`, `ExitTrigger` | Route collision events to the life/state owners | Do not attach legacy TrialZone behaviour alongside active equivalents |
-| `PressurePlate`, `PushBlock`, `LinkedLaser` | Block-only plate, constrained crate, linked beam suppression | Sources exist, not serialized in uploaded gameplay scene |
-| `Assets/Scripts/Presentation/FixedCameraFollow.cs` | Side-on follow/clamp; publishes active-rat shader position | Snap on teleport/respawn using SetTarget |
-| `AudioManager` | Scene-local one-shot SFX service | No persistent volume settings or music bus |
-| `PrototypeHUD` | Life icons, checkpoint label, win/loss panels | Source exists; not attached in the main scene |
-| `Assets/Scripts/Prototype/RatTrialSession.cs` | Legacy life/respawn/outcome harness and OnGUI overlay | Disabled in main scene; do not enable to paper over missing UI |
-| `TrialMovingPlatform`, `TrialWheel` | Existing movement/rotation | Still used; Prototype folder does not mean safe to delete |
+## Ownership
+- `GameManager`: sole attempt state owner (Playing, Paused, Won, Lost); freezes outcome and dispatches one completion event after the frame's triggers.
+- `RatLifeManager`: three lives, checkpoints, immunity and room reset; one active `PlayerRatController` plus two waiting props.
+- `PlayerRatController`: movement, buffered/double jump, jet thrust, crate push and `TrialMovingPlatform.Delta` carry. Pause and terminal states gate input.
+- `FixedCameraFollow`: one position/size owner, fixed depth/rotation, shared follow/snap bounds, zero-delta guard, narrow-view minimum width and `_GlassActiveRatPosition` publication/cleanup.
+- `CampaignSession`: scene-to-profile bridge, attempt timing/lifecycle and checked navigation through `CampaignCatalog`.
+- `CampaignProfile`: versioned PlayerPrefs JSON writer, journal recovery, stable token IDs, purchases, settings, progression and statistics. Validators use a temporary profile key.
+- `CampaignUI`: runtime canvas and menus with explicit scene references to managers, TMP font and display prefab. One InputSystem EventSystem. Preview rats use layer 31, excluded from gameplay cameras.
+- `AudioManager` and `CampaignSettings`: scene audio and saved settings. Audio does not preserve stale gameplay managers across scenes.
 
-## Scene/build map
-`Assets/Scenes/RatEnclosure.unity`: only enabled build entry; GameManager and RatLifeManager enabled, RatTrialSession disabled. `Assets/StartScene.unity`: original scene, disabled in build; not a home screen. Three BeforeLaserPuzzle scene backups remain authoring history, not campaign levels. No Level1/2/3 scenes exist in this snapshot.
+## Traversal and reset
+`PuzzleRoom` resets registered crates/switches/portals/hazards for its checkpoint. `PortalEndpoint` transports only the rat between reciprocal safe arrivals. `LatchedSwitch`, `PressurePlate`, `PushBlock` and `LinkedLaser` retain distinct responsibilities.
 
-`Assets/Editor/PrototypePlayMode.cs` redirects Play to RatEnclosure unless disabled or a recognized slot is open. `RatLevelSlots.cs` only saves/opens editor scenes. `PrototypeAssetPaths.cs` centralises several authoring paths. Update this infrastructure deliberately when a Home scene becomes the build entry; current validators may assume the prototype remains first.
+In stages 1-2, `RatPowerups` owns six temporary timers, shield grace and jet fuel; `RatPickup` stations recharge. Death or Reset Puzzle clears powers and replenishes stations. `CampaignPulseGate` remains latched for the attempt. `CampaignHazardCycle` controls one visible/lethal object; its child fire VFX socket shares activation. Machinery uses `RatPowerups.WorldScale`, not global time scaling, for Slow Time. Augments are distinct from permanent `CoinPickup` rewards and `RatCosmetic` appearance.
 
-## Proposed integration boundaries
-Keep GameManager as per-attempt gameplay state owner, extending it for pause/reset if appropriate. Add a small campaign/scene-flow owner only for cross-scene concerns: selected level, unlocks and navigation. Keep settings/progress persistence separate from per-attempt lives. Prefer an explicit ordered level list over assuming arbitrary build-index order. No requirement for a dependency-injection framework or event bus.
+## Scenes and assets
+Build starts at `Assets/Scenes/Home.unity` then seven explicit paths in CampaignCatalog. See [scene table](levels/README.md). Original enclosure, TransferWorks, starter and backups remain disabled in the campaign build. Editor Play honours a current campaign scene and otherwise opens Home. Imported scene GUIDs are new; shared project assets retain GUIDs. Source moving-platform/wheel GUIDs resolve to retained local Trial components.
 
-Proposed `PortalPair`/`PortalEndpoint` components provide pairing, validation and one transport transaction. They ask the controller to reposition safely, then retarget camera. They do not own lives/checkpoints. Proposed puzzle reset coordination registers room-owned blocks/latches, snapshots a baseline and resets those systems atomically with respawn. Do not create parallel death handlers.
+`ReferenceLevelAdaptation` makes one-time changes to copied source scenes and refuses repeat adaptation. `CampaignAuthoring` is an explicit initial generation tool, not a runtime builder. Never run either to repair an already authored scene. Third-party TMP resources are not intentionally changed; discard incidental generated font-cache changes.
 
-Use existing audio entry points where possible. If making audio persistent, move it to a dedicated object: current AudioManager sits with gameplay managers, so DontDestroyOnLoad on that whole object would also preserve stale gameplay state. Ensure exactly one service and one AudioListener after transitions. Use one UI EventSystem per active UI context with compatible input modules.
-
-## Planned profile integration
-One shared persistence owner coordinates campaign unlocks, collected coin IDs, wallet/purchases, equipped design and statistics/attempt journal. Extend accepted life/outcome events rather than introducing duplicate gameplay owners. Pickups, purchases and terminal outcomes are idempotent logical transactions. UI reads profile/result snapshots; cosmetics never modify physics. See [coins](systems/coins-and-cosmetics.md), [statistics](systems/statistics.md) and [prototype retirement](systems/prototype-retirement.md). These are proposed boundaries, not existing classes.
-
-## Rendering continuity
-GlassEnclosure uses built-in scene capture/GrabPass and the global `_GlassActiveRatPosition`. Preserve camera cleanup and target updates. Imported/third-party TMP content is separate from project shaders. Avoid an unrequested URP conversion, renaming serialized class identities, or reassigning materials globally.
+## Verification boundaries
+Optional `CampaignValidation`, `ReferenceRouteChecks` and `ActiveGlassValidation` are focused developer utilities, not human usability evaluation. See [CURRENT_STATE](CURRENT_STATE.md) for actual runs and limits.

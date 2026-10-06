@@ -1,5 +1,11 @@
 # Settings page
 
+## Implementation update - 6 October 2026
+CampaignUI and CampaignSettings implement the shared Settings page, persisted volume/mute, test cue/defaults, 0/4/8x MSAA, texture quality, VSync, desktop fullscreen and reduced decorative motion. ScreenSpaceOverlay TMP scales with resolution. Browser fullscreen/audio policies and laptop performance remain manual checks. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification; expands [UI/audio](ui-and-audio.md), not a claim of working settings.
 
 Home and Pause open the same Settings page. Back/Escape returns to its caller; returning from paused settings stays paused. Use UGUI/TMP, laboratory panel styling, high contrast labels, visible keyboard focus and mouse support. Do not use prototype debug OnGUI as the final page.

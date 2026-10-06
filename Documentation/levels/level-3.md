@@ -1,3 +1,5 @@
+> Historical three-stage proposal. See the [active seven-stage campaign](README.md) for current scene order and replacement layouts.
+
 # Level 3 — Escape Circuit
 
 Status: proposed blockout; target 6–9 minutes. Recombines learned routing, one latch and two independent block-held gates. Introduce no new mandatory power-up.

@@ -1,5 +1,11 @@
 # Portal mechanic — proposed specification
 
+## Implementation update - 6 October 2026
+PortalEndpoint is wired in stages 3-7 with reciprocal pairs, explicit safe arrivals, E interaction, cleared velocity, grounded/clearance checks and re-entry debounce. It uses the current life manager/controller/camera. Stages 1-2 instead use the required reference augments. Runtime transfer and reset checks passed in Relay Archive. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: new design; no portal source or scene wiring exists. Fixed pairs are a proposed starting point, not a team-confirmed final rule.
 
 ## Player contract

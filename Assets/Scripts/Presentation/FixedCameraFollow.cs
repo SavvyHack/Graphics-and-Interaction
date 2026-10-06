@@ -14,6 +14,8 @@ public class FixedCameraFollow : MonoBehaviour
     [SerializeField] private Vector2 followOffset = new Vector2(2.0f, 1.0f);
     [SerializeField, Min(0.01f)] private float smoothTime = 0.15f;
     [SerializeField] private bool followVertically = true;
+    [Tooltip("Keep the rat and nearby route visible when the game window is narrow.")]
+    [SerializeField, Min(0f)] private float minimumHorizontalView = 16f;
 
     [Header("Optional Camera Bounds")]
     [SerializeField] private bool clampToBounds = false;
@@ -24,6 +26,9 @@ public class FixedCameraFollow : MonoBehaviour
     private float fixedZ;
     private Quaternion fixedRotation;
     private float fixedY;
+    private bool initialized;
+    private Camera viewCamera;
+    private float authoredSize;
 
     private static readonly int GlassActiveRatPosition = Shader.PropertyToID("_GlassActiveRatPosition");
 
@@ -37,39 +42,61 @@ public class FixedCameraFollow : MonoBehaviour
 
     private void Awake()
     {
+        InitializePose();
+    }
+
+    private void InitializePose()
+    {
+        if (initialized) return;
         fixedZ = transform.position.z;
         fixedY = transform.position.y;
         fixedRotation = transform.rotation;
+        viewCamera = GetComponent<Camera>();
+        if (viewCamera != null) authoredSize = viewCamera.orthographicSize;
+        initialized = true;
     }
 
     private void LateUpdate()
     {
+        if (viewCamera != null && viewCamera.orthographic)
+            viewCamera.orthographicSize = Mathf.Max(authoredSize, minimumHorizontalView / (2f * Mathf.Max(.1f, viewCamera.aspect)));
         UpdateGlassTarget();
-        if (target == null)
+        if (target == null || !target.gameObject.activeInHierarchy)
+        {
+            velocity = Vector3.zero;
             return;
+        }
 
+        // Smooth only on the gameplay plane. Depth and rotation are hard invariants.
+        // SmoothDamp can produce a non-finite velocity for zero delta time.
+        Vector3 next = transform.position;
+        if (Time.deltaTime > 0f)
+            next = Vector3.SmoothDamp(next, DesiredPosition(),
+                ref velocity, Mathf.Max(0.01f, smoothTime), Mathf.Infinity, Time.deltaTime);
+        next.z = fixedZ;
+        if (!followVertically) next.y = fixedY;
+        if (clampToBounds) next = ClampPosition(next);
+        velocity.z = 0f;
+        transform.SetPositionAndRotation(next, fixedRotation);
+    }
+
+    private Vector3 DesiredPosition()
+    {
         float desiredX = target.position.x + followOffset.x;
         float desiredY = followVertically
             ? target.position.y + followOffset.y
             : fixedY;
 
-        if (clampToBounds)
-        {
-            desiredX = Mathf.Clamp(desiredX, minBounds.x, maxBounds.x);
-            desiredY = Mathf.Clamp(desiredY, minBounds.y, maxBounds.y);
-        }
-
         Vector3 desiredPosition = new Vector3(desiredX, desiredY, fixedZ);
+        return clampToBounds ? ClampPosition(desiredPosition) : desiredPosition;
+    }
 
-        transform.position = Vector3.SmoothDamp(
-            transform.position,
-            desiredPosition,
-            ref velocity,
-            smoothTime
-        );
-
-        // Prevent any accidental rotation caused by other scripts or hierarchy changes.
-        transform.rotation = fixedRotation;
+    private Vector3 ClampPosition(Vector3 position)
+    {
+        position.x = Mathf.Clamp(position.x, Mathf.Min(minBounds.x, maxBounds.x), Mathf.Max(minBounds.x, maxBounds.x));
+        if (followVertically)
+            position.y = Mathf.Clamp(position.y, Mathf.Min(minBounds.y, maxBounds.y), Mathf.Max(minBounds.y, maxBounds.y));
+        return position;
     }
 
     /// <summary>
@@ -77,23 +104,14 @@ public class FixedCameraFollow : MonoBehaviour
     /// </summary>
     public void SetTarget(Transform newTarget, bool snapImmediately = false)
     {
+        InitializePose();
         target = newTarget;
         velocity = Vector3.zero;
         UpdateGlassTarget();
 
         if (snapImmediately && target != null)
         {
-            float newY = followVertically ? target.position.y + followOffset.y : fixedY;
-            float newX = target.position.x + followOffset.x;
-
-            if (clampToBounds)
-            {
-                newX = Mathf.Clamp(newX, minBounds.x, maxBounds.x);
-                newY = Mathf.Clamp(newY, minBounds.y, maxBounds.y);
-            }
-
-            transform.position = new Vector3(newX, newY, fixedZ);
-            transform.rotation = fixedRotation;
+            transform.SetPositionAndRotation(DesiredPosition(), fixedRotation);
         }
     }
 
@@ -113,6 +131,7 @@ public class FixedCameraFollow : MonoBehaviour
 
     private void OnDisable()
     {
+        velocity = Vector3.zero;
         ResetGlassTarget();
     }
 }

@@ -15,12 +15,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip ratLostClip;
     [SerializeField] private AudioClip completionClip;
     [SerializeField] private AudioClip failureClip;
+    [SerializeField] private AudioSource musicSource;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
@@ -28,6 +29,8 @@ public class AudioManager : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+        ApplySettings();
+        if (musicSource != null && musicSource.clip != null) musicSource.Play();
     }
 
     public void PlayJump() => Play(jumpClip);
@@ -35,6 +38,14 @@ public class AudioManager : MonoBehaviour
     public void PlayRatLost() => Play(ratLostClip);
     public void PlayCompletion() => Play(completionClip);
     public void PlayFailure() => Play(failureClip);
+    public void ApplySettings()
+    {
+        RatSettings settings = CampaignProfile.Data.settings;
+        AudioListener.volume = settings.mute ? 0 : settings.master;
+        if (audioSource != null) audioSource.volume = settings.effects;
+        if (musicSource != null) musicSource.volume = settings.music;
+    }
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 
     private void Play(AudioClip clip)
     {

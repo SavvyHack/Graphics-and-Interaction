@@ -1,5 +1,11 @@
 # Progression, saving and resets — proposed defaults
 
+## Implementation update - 6 October 2026
+CampaignCatalog contains seven ordered scenes; Home is build entry zero. CampaignSession is the navigation/lifecycle bridge and CampaignProfile is the sole versioned PlayerPrefs JSON writer. Completing stage seven sets campaign complete. New Game retains economy/settings/statistics; Erase Profile clears them. Continue restarts a level. Old three-stage wording below is historical design only. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 ## Separate three forms of state
 | State | Lifetime | Storage |
 |---|---|---|

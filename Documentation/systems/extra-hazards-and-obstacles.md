@@ -1,5 +1,11 @@
 # Extra hazards and obstacles
 
+## Implementation update - 6 October 2026
+Saved stages contain timed gates, scanner sweeps, shuttles, wheels, magnetic barriers, shield lasers and fire traps. Stages 1-2 retain existing hazard shaders, and Slow Time affects TrialMovingPlatform/TrialWheel/CampaignHazardCycle without slowing the player. See fire-effect-handoff.md for the pending assessed-particle integration. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification. Additional obstacle vocabulary requested by the user; author only what serves a level's solo solution. These are chosen defaults, not evidence that these components are present. Read [existing puzzles](puzzles-and-hazards.md) before extending them.
 
 ## Style and fairness

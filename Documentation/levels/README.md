@@ -1,14 +1,23 @@
-# Three-level campaign briefs
+# Seven-level campaign
 
-## Collectibles and extensions
-Each authored level targets 20 unique optional coins (12 normal route, 8 recoverable detours), per [coins/cosmetics](../systems/coins-and-cosmetics.md). Record stable IDs, locations and measured traversal timings in each brief before authoring. Follow the rollout in [extra hazards](../systems/extra-hazards-and-obstacles.md); update affected briefs with an explicit solo solution and checkpoint reset baseline. Extra levels need the same evidence and a unique ordered-catalog ID. Preserve the prototype's side-on laboratory aesthetic. The last catalog entry receives the [final victory](../systems/victory-screen.md).
+Confirmed user direction, 6 October 2026: seven levels total. Stages 1–2 adapt the supplied [reference repository](https://github.com/SavvyHack/Graphics-and-Interaction/tree/11bf1fb1e1a05e778ecbed0d6a9e4beb3ec54ba9). Stages 3–7 were rebuilt in the same five-floor enclosure style, each introducing one new augment ([details](enclosure-levels-3-7.md)). Earlier three-level briefs below are historical proposals, not the active scene order.
 
-## Original campaign direction
+| Stage | Scene in Assets/Scenes | Main route |
+|---|---|---|
+| 1 Augmentation Lab | AugmentationLab.unity | Five-tier climb: speed gaps, shield laser, jet shafts, magnetic gate, elevator and wheel |
+| 2 Reactor Divide | ReactorDivide.unity | Coolant jumps, return gallery, magnetic gate, two moving shuttles, high exit route |
+| 3 Relay Archive | RelayArchive.unity | New: dash. Trench practice, coolant, gaps, wheel, elevator, jetpack |
+| 4 Coolant Foundry | CoolantFoundry.unity | New: wall jump. Four chimneys, coolant shuttles, dash pits |
+| 5 Scanner Gallery | ScannerGallery.unity | New: glide. Updraft climbs, laser corridors, long glides, magnetic gates |
+| 6 Containment Core | ContainmentCore.unity | New: phase. Containment fields, timed hazard gauntlets |
+| 7 Escape Spire | EscapeSpire.unity | New: ground pound. Hatches, service channels, every augment, exit vault |
 
-These are original proposed layouts inspired by the user's desired puzzle-platformer direction. No exact Fireboy and Watergirl levels were supplied or reproduced. The old GDD images remain art/history, not level requirements.
+All stages start with three lives, contain 20 permanent gold tokens and expose Retry, Pause and Help. Home is build entry zero. RatEnclosure and TransferWorks remain preserved outside the enabled campaign build.
 
-Read [Level 1](level-1.md), [Level 2](level-2.md), [Level 3](level-3.md) and the [portal contract](../systems/portals.md). Each brief states a solo solution before geometry is built. Author blockout with the existing controller first; measure jumps/camera framing in Unity before visual polish. Budget at least one comfortable waiting platform before each timed hazard.
+## Reference stages
+Both use nine checkpoints. Blue-grey panels, illuminated walkable edges and the current observation-glass, rat, water and hazard materials retain local rendering. Cyan spherical stations grant temporary augments; gold cylindrical tokens buy cosmetic outfits. Stages 1–2 keep stable save IDs `enclosure` and `transfer`, including token numbers 0–19, despite changed layouts. Previously collected tokens remain collected at their replacement positions.
 
-Cross-level invariants: one active rat, three lives per stage, fixed labelled portal pairs, only the rat teleports, crates stay on bounded tracks, clear reset boundaries and no simultaneous distant button requirement. Latched switches are a new feature, not an existing capability. Camera should show the relevant control/output relationship or provide an explicit short reveal.
+The optional `ReferenceLevelAdaptation.Adapt` tool adapts source copies once and refuses to run again on a scene with CampaignSession. Do not rerun old CampaignAuthoring or source builders over authored scenes. Use Unity Inspector for further edits.
 
-Do not enable the old backup scenes as Level 2/3. New campaign scenes use `Assets/Scenes/Level1.unity`, `Level2.unity`, `Level3.unity` after deliberately saving authored layouts. Home becomes the entry only when full navigation exists.
+## Checks still requiring human review
+Play every full route without developer repositioning, collect every optional token, assess difficulty and clarity of power durations, test narrow windows, and test the browser build. Developer traversal checks cover selected required jumps and shuttles; they do not establish a balanced full campaign or a measured completion time.

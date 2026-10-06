@@ -1,5 +1,11 @@
 # Statistics page and attempt accounting
 
+## Implementation update - 6 October 2026
+CampaignProfile records lifetime and per-stage attempts, wins, failures, abandoned attempts, deaths, active-play time, best clear time, best survivors and unique tokens. The active journal recovers interrupted sessions once. CampaignUI supplies the Statistics page. Isolated transaction/recovery and runtime accounting checks passed; persistence remains device/browser-local. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 Status: target specification; no persistent statistics system currently verified. Home has Statistics. Show lifetime totals and per-level rows; optionally expose the current attempt from Pause without advancing its timer. Back returns to caller.
 
 ## Definitions

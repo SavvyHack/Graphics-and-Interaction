@@ -1,5 +1,11 @@
 # Puzzles and hazards
 
+## Implementation update - 6 October 2026
+PuzzleRoom, LatchedSwitch, PortalEndpoint and WarningHazard are wired in stages 3-7. Imported CampaignPulseGate/CampaignHazardCycle and RatPickup/RatPowerups serve stages 1-2. Reset Puzzle clears current-room state and temporary powers, but imported magnetic gates stay open until retry. No independent life manager was added. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+
+## Earlier acceptance specification
+The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
+
 ## Reusable code and limitations
 `PushBlock` is a kinematic gravity-free X-track crate with bounded travel; player ground movement calls Push. `PressurePlate` checks overlapping PushBlock colliders and requires the crate centre inside its X/Z footprint. It does not accept the rat. It drives exactly one LinkedLaser and updates its top/indicator each physics tick.
 `LinkedLaser` positions a beam between two endpoints and synchronizes visible beam/lethal collider; `SetSuppressed` stores one boolean. Do not attach several writers and expect OR/AND logic. Existing fire/electric/laser prefabs instead use TimedHazard + HazardTrigger. These are different laser implementations; choose deliberately per puzzle.

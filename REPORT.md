@@ -1,14 +1,5 @@
 # Project 2 Report
 
-Read the [project 2
-specification](https://github.com/feit-comp30019/project-2-specification) for
-details on what needs to be covered here. You may modify this template as you
-see fit, but please keep the same general structure and headings.
-
-Remember that you should maintain the Game Design Document (GDD) in the
-`README.md` file (as discussed in the specification). We've provided a
-placeholder for it [here](README.md).
-
 ## Table of Contents
 
 - [Evaluation Plan](#evaluation-plan)
@@ -34,5 +25,4 @@ TODO - see specification for details
 TODO - see specification for details
 
 ## References and External Resources
-
-TODO - see specification for details
+- AI assistance (Codex): campaign/menu/profile scaffolding, reference-level integration, gameplay bug fixes, focused developer checks and documentation. No participant data or user-evaluation results were generated. Existing shader code was retained. Assessed effects and their explanations require the team's review against its marking specification.

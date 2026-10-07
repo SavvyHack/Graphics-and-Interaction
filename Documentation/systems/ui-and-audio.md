@@ -4,6 +4,8 @@
 CampaignUI supplies Home, Pause, Failure, map, Help, Shop/Wardrobe, Settings, Statistics and survivor outcomes. AudioManager routes saved volume settings to event cues and a quiet generated ambient loop. Pause/menu flow and displays passed developer checks. Human listening, keyboard-only browsing at all resolutions and browser user-gesture audio remain to check. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
 
 ## Earlier acceptance specification
+Home has a dedicated laboratory presentation in `Assets/Scripts/Presentation/CampaignUI.cs` (7 October): gold title and New Game emphasis, static decorative specimens, and a framed rat exhibit. The top-right badge and button outlines were removed at user request. Buttons use brighter hover/keyboard-focus fills and distinct pressed colours. The in-game Credits page and its Home/final-result links were removed; repository attributions remain. Background audio is unchanged. Decorations ignore raycasts and have no animation, so reduced-motion users see the same layout. Existing scroll/navigation and saved outfit preview remain. Open `Assets/Scenes/Home.unity` to review; Unity visual and interaction acceptance for this revision is pending.
+
 The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
 
 Status: target specification. Existing PrototypeHUD/AudioManager are starting points, not a complete menu system. Main scene HUD references are currently empty.
@@ -30,6 +32,10 @@ Detailed contracts: [Settings](settings-page.md), [Help](help-and-lore.md), [War
 Use existing UGUI/TMP packages. One compatible EventSystem and one owner for navigation; prevent simultaneous gameplay input. Visible keyboard focus, mouse support, readable text and 16:9 plus narrower-window checks. Keep important UI away from browser edges and show loading feedback during transitions. UI should not depend on a running simulation clock.
 
 ## Audio settings
+Settings uses the normal button fill for persistent selection, so Test sound and other clicked actions do not remain aqua. Mute All uses aqua for both normal and selected states only when mute is ON. Hover and pressed feedback remain; this is presentation only and does not change saved audio values.
+
+Runtime button creation configures the image, target graphic and colour states before activation. UGUI then applies the initial tint instantly instead of fading from white whenever Settings is rebuilt (for example, toggling mute). Hover/focus transitions retain their short fade. Visual regression check: repeatedly toggle mute in Home and Pause settings, then check hover, keyboard focus and other settings toggles for flashes.
+
 Extend/reuse AudioManager for event calls. Introduce Master, Music and SFX buses, preferably a Unity AudioMixer asset; ambient loops may initially share Music to avoid another control. Route every source including UI, portals and hazards consistently. Clamp normalized settings to 0..1; use a silence floor when converting to decibels to avoid log(0). Mute preserves slider values; unmute restores them. Persist with versioned settings keys, load before audible playback and save on deliberate settings change/exit, not every frame.
 Sliders preview immediately; Restore Defaults affects audio settings only. Music must not restart or duplicate on every pause/settings visit. On pause, freeze/pause gameplay loops as appropriate while UI cues remain available. Browser first interaction must permit audio startup; verify in a real WebGL build.
 

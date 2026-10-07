@@ -107,7 +107,7 @@ public class CampaignUI : MonoBehaviour
         hud.gameObject.SetActive(false); page = title; back = returnTo;
         menu = Rect("Page " + title, canvas); Stretch(menu); menu.gameObject.AddComponent<Image>().color = ink;
         var stripe = Rect("Header line", menu); Place(stripe, new Vector2(.055f,.865f), new Vector2(.945f,.87f)); stripe.gameObject.AddComponent<Image>().color = cyan;
-        var heading = Label(menu, title.ToUpperInvariant(), 42); Place(heading.rectTransform, new Vector2(.06f,.89f), new Vector2(.82f,.97f));
+        var heading = Label(menu, title.ToUpperInvariant(), 42); heading.name = "Page heading"; Place(heading.rectTransform, new Vector2(.06f,.89f), new Vector2(.82f,.97f));
         var sub = Label(menu, subtitle, 21); sub.color = muted; Place(sub.rectTransform, new Vector2(.06f,.795f), new Vector2(.94f,.86f));
         var viewport = Rect("Scroll viewport", menu); Place(viewport, new Vector2(.06f,.075f), new Vector2(.94f,.78f));
         viewport.gameObject.AddComponent<RectMask2D>();
@@ -140,11 +140,25 @@ public class CampaignUI : MonoBehaviour
     }
     private Button MakeButton(Transform parent, string text, Action click)
     {
-        RectTransform rect = Rect(text, parent); rect.gameObject.AddComponent<Image>().color = panel;
+        RectTransform rect = Rect(text, parent);
+        // Selectable.OnEnable applies its initial tint instantly. Configure while
+        // inactive so rebuilt pages never fade from the default white tint.
+        rect.gameObject.SetActive(false);
+        var background = rect.gameObject.AddComponent<Image>();
+        background.color = Color.white;
         Button button = rect.gameObject.AddComponent<Button>();
-        ColorBlock colors = button.colors; colors.normalColor = Color.white; colors.highlightedColor = new Color(.55f,1,1); colors.selectedColor = new Color(.55f,1,1); colors.pressedColor = new Color(.3f,.75f,.8f); colors.disabledColor = new Color(.35f,.4f,.45f); button.colors = colors;
+        button.targetGraphic = background;
+        button.transition = Selectable.Transition.ColorTint;
+        ColorBlock colors = button.colors; colors.normalColor = panel; colors.highlightedColor = new Color(.24f,.43f,.54f); colors.selectedColor = colors.highlightedColor; colors.pressedColor = new Color(.12f,.29f,.37f); colors.disabledColor = new Color(.08f,.1f,.12f); colors.fadeDuration = .08f; button.colors = colors;
+        // Selection persists after a click; Settings reserves persistent aqua for mute ON.
+        if (page == "Settings")
+        {
+            colors.selectedColor = colors.normalColor;
+            button.colors = colors;
+        }
         TMP_Text label = Label(rect, text, 24); Stretch(label.rectTransform); label.rectTransform.offsetMin = new Vector2(18,4); label.rectTransform.offsetMax = new Vector2(-18,-4); label.alignment = TextAlignmentOptions.MidlineLeft;
         button.onClick.AddListener(() => { AudioManager.Instance?.PlayCheckpoint(); click(); });
+        rect.gameObject.SetActive(true);
         return button;
     }
     private TMP_Text Label(Transform parent, string text, int size)
@@ -190,15 +204,72 @@ public class CampaignUI : MonoBehaviour
     private void ShowHome()
     {
         Page("Project R.A.T.", "LABORATORY ESCAPE   /   Seven enclosures. Three rats. One way out.", null);
+        StyleHome();
+        RectTransform hero = Rect("Escape crew exhibit", content);
+        hero.gameObject.AddComponent<LayoutElement>().preferredHeight = 190;
+        hero.gameObject.AddComponent<Image>().color = new Color(.09f,.18f,.24f);
+        HomeBlock(hero, "Exhibit accent", new Vector2(0,0), new Vector2(.008f,1), cyan);
+        var crew = Label(hero, "MEET THE ESCAPE COMMITTEE", 18);
+        crew.color = cyan;
+        Place(crew.rectTransform, new Vector2(.035f,.77f), new Vector2(.7f,.98f));
+        var tag = Label(hero, "SMALL PAWS.\nBIG PLANS.", 30);
+        tag.fontStyle = FontStyles.Bold;
+        Place(tag.rectTransform, new Vector2(.035f,.18f), new Vector2(.36f,.76f));
+        RectTransform parent = content;
+        content = hero;
         Preview(3,CampaignProfile.Equipped,150);
+        if (ratDisplayPrefab != null)
+            Place((RectTransform)hero.GetChild(hero.childCount-1), new Vector2(.36f,.08f), new Vector2(.97f,.86f));
+        content = parent;
         Row(()=> {
-            Button("New game", () => { if (CampaignProfile.Data.hasCampaign) Confirm("Start a new campaign?", "Level unlocks reset. Coins, outfits, statistics and settings are kept.", () => { CampaignProfile.NewCampaign(); Load(0); }, ShowHome); else { CampaignProfile.NewCampaign(); Load(0); } });
+            var start = Button("New game", () => { if (CampaignProfile.Data.hasCampaign) Confirm("Start a new campaign?", "Level unlocks reset. Coins, outfits, statistics and settings are kept.", () => { CampaignProfile.NewCampaign(); Load(0); }, ShowHome); else { CampaignProfile.NewCampaign(); Load(0); } });
+            ColorBlock startColors = start.colors;
+            startColors.normalColor = new Color(1f,.73f,.32f);
+            startColors.highlightedColor = new Color(1f,.93f,.65f);
+            startColors.selectedColor = startColors.highlightedColor;
+            startColors.pressedColor = new Color(.85f,.52f,.16f);
+            start.colors = startColors;
+            start.GetComponentInChildren<TMP_Text>().color = ink;
+            start.GetComponentInChildren<TMP_Text>().fontStyle = FontStyles.Bold;
             Button(CampaignProfile.Data.campaignComplete ? "Replay final level" : "Continue level from start", () => Load(CampaignProfile.Data.campaignComplete ? CampaignCatalog.Count-1 : CampaignProfile.Data.selected), CampaignProfile.Data.hasCampaign);
         });
         Row(()=> { Button("Laboratory map", ShowSelect); Button("Rat wardrobe", () => ShowWardrobe(false)); });
         Row(()=> { Button("Shop", () => ShowWardrobe(true)); Button("Statistics", ShowStats); });
         Row(()=> { Button("Settings", () => ShowSettings(ShowHome)); Button("Help", () => ShowHelp(ShowHome,0)); });
-        Row(()=> { Button("Credits", () => ShowCredits(ShowHome)); if (!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer) Button("Quit", Application.Quit); });
+        if (!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer) Button("Quit", Application.Quit);
+    }
+    private void StyleHome()
+    {
+        menu.GetComponent<Image>().color = new Color(.035f,.055f,.105f);
+        RectTransform decoration = Rect("Laboratory confetti", menu);
+        Stretch(decoration);
+        decoration.SetAsFirstSibling();
+        // Decorative graphics never intercept pointer input or participate in navigation.
+        for (int i=0;i<18;i++)
+        {
+            float x = (i % 2 == 0) ? .018f : .966f;
+            float y = .06f + (i/2)*.105f;
+            RectTransform spark = HomeBlock(decoration, "Floating specimen", new Vector2(x,y), new Vector2(x+.014f,y+.022f),
+                i%3==0 ? new Color(1,.73f,.32f,.55f) : new Color(.36f,.94f,.91f,.3f));
+            spark.localRotation = Quaternion.Euler(0,0,i%2==0 ? 25 : -20);
+        }
+        TMP_Text title = menu.Find("Page heading").GetComponent<TMP_Text>();
+        if (title != null)
+        {
+            title.text = "PROJECT <color=#FFD080>R.A.T.</color>";
+            title.fontSize = 54;
+            title.fontStyle = FontStyles.Bold;
+            Place(title.rectTransform,new Vector2(.06f,.885f),new Vector2(.71f,.98f));
+        }
+    }
+    private RectTransform HomeBlock(Transform parent, string name, Vector2 min, Vector2 max, Color color)
+    {
+        RectTransform rect = Rect(name,parent);
+        Place(rect,min,max);
+        var image = rect.gameObject.AddComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+        return rect;
     }
     private void Row(Action build)
     {
@@ -301,7 +372,8 @@ public class CampaignUI : MonoBehaviour
     private void ShowHelp(Action returnTo,int tab)
     {
         Page("Field manual","Everything you need to leave the laboratory.",returnTo);
-        Button("Controls",()=>ShowHelp(returnTo,0));Button("Field guide",()=>ShowHelp(returnTo,1));Button("Our story",()=>ShowHelp(returnTo,2));
+        Row(()=> { Button("Controls",()=>ShowHelp(returnTo,0)); Button("Power-ups",()=>ShowHelp(returnTo,3)); });
+        Row(()=> { Button("Field guide",()=>ShowHelp(returnTo,1)); Button("Our story",()=>ShowHelp(returnTo,2)); });
         if(tab==0)
         {
             Copy("A / D or arrow keys — move\nSpace — jump (hold to fly with jetpack or glide)\nShift — sprint\nE — magnetic pulse\nQ — dash (with DASH)\nS / Down — ground pound (with GROUND POUND)\nEscape — pause / go back\nR — confirm a level restart",26,300);
@@ -322,6 +394,14 @@ public class CampaignUI : MonoBehaviour
             Copy("TEMPORARY AUGMENTS\nCyan orb stations recharge after 3 seconds. Jetpack: 12s with limited fuel; double jump: 18s; shield: 18s, absorbs one hit; speed: 12s; gravity pulse: one E use within 6m, expires after 20s; slow time: 10s, slows machinery but not your rat; dash: 15s; wall jump: 18s; glide: 15s; phase: 7s; ground pound: 15s. The HUD shows remaining time and fuel. Falls and deep coolant bypass shields. A new rat loses powers and replenishes stations. Reset current puzzle also clears powers. Magnetic gates stay open for the attempt.",23,235);
             Copy("Gold coins add to your saved wallet and return on a new attempt; cyan orbs are temporary powers. New Game resets level unlocks but keeps tokens, outfits and lifetime statistics.",23,90);
         }
+        else if(tab==3)
+        {
+            Copy("POWER-UPS / TEMPORARY AUGMENTS",28,50);
+            Copy("Touch a cyan station to collect its power. Different powers can be combined; collecting the same one refreshes its timer. Watch the HUD for remaining time. Stations normally recharge after 3 seconds.",23,110);
+            for (int i=0;i<RatPowerups.Names.Length;i++)
+                Copy($"<color=#FFD080>{RatPowerups.Names[i]} / {RatPowerups.Durations[i]:0}s</color>\n{RatPowerups.Hints[i]}",23,100);
+            Copy("LIMITS & RESET\nJetpack fuel can run out before its timer. Shield absorbs one hit; falls and deep coolant bypass it. Gravity Pulse is consumed when you press E, so get within 6 metres of a gate first. Phase does not protect against coolant or falls.\n\nLosing a rat or resetting the puzzle clears all powers and replenishes stations. Checkpoints do not preserve powers. Outfits and gold tokens do not grant powers.",23,260);
+        }
         else Copy("Behind the glass of a quiet research laboratory, three rats have learned the rhythm of the tests. Doors click, warning lamps blink, and every enclosure promises another reward token.\n\nTonight, the transfer equipment has been left running. One rat ventures ahead while the others wait their turn. Move the laboratory's blocks, outwit its security systems and use its transfer pads to find a way outside.\n\nEvery rat that makes it through is a reason to celebrate.",26,400);
     }
     private void ShowSettings(Action returnTo)
@@ -331,7 +411,14 @@ public class CampaignUI : MonoBehaviour
         Slider("Master volume",s.master,v=>s.master=v);
         Slider("Music / ambience",s.music,v=>s.music=v);
         Slider("Sound effects",s.effects,v=>s.effects=v);
-        Button(s.mute ? "Mute all: ON" : "Mute all: OFF",()=>{s.mute=!s.mute;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
+        Button muteButton = Button(s.mute ? "Mute all: ON" : "Mute all: OFF",()=>{s.mute=!s.mute;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
+        if (s.mute)
+        {
+            ColorBlock muteColors = muteButton.colors;
+            muteColors.normalColor = muteColors.highlightedColor;
+            muteColors.selectedColor = muteColors.normalColor;
+            muteButton.colors = muteColors;
+        }
         Button("Test sound"+(s.mute||s.master==0||s.effects==0 ? " (silent at current settings)" : ""),()=>AudioManager.Instance?.PlayCheckpoint());
         string[] quality={"Performance","Balanced (4× anti-aliasing)","High (8× anti-aliasing)"};
         Button("Graphics: "+quality[s.quality],()=>{s.quality=(s.quality+1)%3;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
@@ -363,13 +450,8 @@ public class CampaignUI : MonoBehaviour
         Copy($"Rats remaining this level: {result.survivors}/3\nTime {CampaignProfile.TimeText(result.seconds)}   •   Rats lost {result.deaths}   •   Tokens this attempt {result.coins}",25,90);
         if(won&&!final) Focus(Button("Next level",()=>session.LoadLevel(session.LevelIndex+1)));
         Button(won?"Replay level":$"Retry with {lives.EntryLives} "+(lives.EntryLives==1?"rat":"rats"),()=>session.LoadLevel(session.LevelIndex));
-        if(final){Button("Laboratory map",ShowSelect);Button("Credits",()=>ShowCredits(ShowResult));}
+        if(final) Button("Laboratory map",ShowSelect);
         Button("Home",session.Home);
-    }
-    private void ShowCredits(Action returnTo)
-    {
-        Page("Credits","Project R.A.T. — a student laboratory escape.",returnTo);
-        Copy("Created by the Chocolate Bananas project team for COMP30019.\n\nOriginal rat geometry, laboratory assets, shaders and prototype course retained. Campaign code, interface and additional level blockouts prepared with Codex assistance. Levels 1-2 and their augments adapted from SavvyHack/Graphics-and-Interaction; source links are in the project report.\n\nText rendering: TextMesh Pro / Liberation Sans. Unity and package licences remain with their respective authors.\n\nAudio: original synthesized project effects and a synthesized laboratory ambient loop. No copied Fireboy and Watergirl artwork or level geometry.",24,420);
     }
     private void OnDestroy(){ClearPreview();}
 

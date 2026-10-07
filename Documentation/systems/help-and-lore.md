@@ -1,7 +1,7 @@
 # Help page, field guide and lore
 
 ## Implementation update - 6 October 2026
-CampaignUI.ShowHelp implements Controls, Field guide and Story, reachable from Home and Pause. The guide now describes both reference layouts, all six temporary augments, duration/fuel, shield exclusions, cyan stations versus gold tokens, and later portal/crate stages. Help no longer claims powers are deferred. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
+CampaignUI.ShowHelp implements Controls, Power-ups, Field guide and Our story, reachable from Home and Pause. The Power-ups section (7 October) lists all 11 shipped augments using RatPowerups.Names, Hints and Durations, plus collection, stacking, fuel, shield/pulse/phase limits and reset rules. The field guide covers the seven current routes. Static review only for this revision; Unity scrolling, readability and Home/Pause navigation remain to check. Historical specifications below do not describe current shipped scope.
 
 ## Earlier acceptance specification
 The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.

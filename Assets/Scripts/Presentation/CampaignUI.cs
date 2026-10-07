@@ -308,11 +308,15 @@ public class CampaignUI : MonoBehaviour
     private void ShowWardrobe(bool shop)
     {
         Page(shop ? "Token exchange" : "Rat wardrobe", $"WALLET  {CampaignProfile.Wallet} tokens   /   Outfits change appearance only.",ShowHome);
+        if (previewOutfit < 0 || previewOutfit >= CampaignCatalog.OutfitIds.Length ||
+            (!shop && !CampaignProfile.Data.owned.Contains(CampaignCatalog.OutfitIds[previewOutfit])))
+            previewOutfit = CampaignProfile.Equipped;
         Preview(1,previewOutfit);
         for(int i=0;i<CampaignCatalog.OutfitIds.Length;i++)
         {
             int index=i;
             bool owned=CampaignProfile.Data.owned.Contains(CampaignCatalog.OutfitIds[i]);
+            if (!shop && !owned) continue;
             string status=CampaignProfile.Equipped==i ? "EQUIPPED" : owned ? "OWNED" : CampaignCatalog.Prices[i]+" tokens";
             Button((previewOutfit==i ? "› " : "")+CampaignCatalog.OutfitNames[i]+"   /   "+status,()=>{ previewOutfit=index; ShowWardrobe(shop); });
         }
@@ -351,7 +355,7 @@ public class CampaignUI : MonoBehaviour
             GameObject rat=Instantiate(ratDisplayPrefab,previewRoot.transform);
             rat.transform.localPosition=new Vector3((i-(count-1)*.5f)*1.8f,.05f,0);rat.transform.localRotation=Quaternion.Euler(0,65,0);rat.transform.localScale=Vector3.one*1.8f;
             foreach(Transform t in rat.GetComponentsInChildren<Transform>(true)) t.gameObject.layer=31;
-            foreach(RatCosmetic cosmetic in rat.GetComponentsInChildren<RatCosmetic>()){cosmetic.enabled=false;cosmetic.Apply(outfit);}
+            foreach(RatCosmetic cosmetic in rat.GetComponentsInChildren<RatCosmetic>()){cosmetic.Apply(outfit);cosmetic.enabled=true;}
         }
     }
     private void ShowStats()
@@ -408,6 +412,7 @@ public class CampaignUI : MonoBehaviour
     {
         Page("Settings","Changes apply immediately. Audio and graphics preferences stay saved.",()=>{CampaignProfile.Save();returnTo();});
         RatSettings s=CampaignProfile.Data.settings;
+        TokenSettings();
         Slider("Master volume",s.master,v=>s.master=v);
         Slider("Music / ambience",s.music,v=>s.music=v);
         Slider("Sound effects",s.effects,v=>s.effects=v);
@@ -427,6 +432,43 @@ public class CampaignUI : MonoBehaviour
         Button("Reduced decorative motion: "+(s.reducedMotion?"ON":"OFF"),()=>{s.reducedMotion=!s.reducedMotion;CampaignProfile.Save();ShowSettings(returnTo);});
         Button("Restore audio defaults",()=>{s.master=.8f;s.music=.5f;s.effects=.8f;s.mute=false;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
         if(session==null) Button("Data — erase all saved data",()=>Confirm("Erase all data?","This clears level progress, tokens, outfits, statistics and settings. This cannot be undone.",()=>{CampaignProfile.Erase();CampaignSettings.Apply();ShowHome();},()=>ShowSettings(returnTo)));
+    }
+    private void TokenSettings()
+    {
+        TMP_Text balance = Label(content, $"TOKENS / Wallet: {CampaignProfile.Wallet}", 24);
+        balance.gameObject.AddComponent<LayoutElement>().preferredHeight = 40;
+        RectTransform entry = Rect("Token amount", content);
+        entry.gameObject.SetActive(false);
+        entry.gameObject.AddComponent<LayoutElement>().preferredHeight = 54;
+        var background = entry.gameObject.AddComponent<Image>(); background.color = panel;
+        RectTransform viewport = Rect("Input viewport", entry); Stretch(viewport);
+        viewport.offsetMin = new Vector2(18,4); viewport.offsetMax = new Vector2(-18,-4);
+        viewport.gameObject.AddComponent<RectMask2D>();
+        TMP_Text value = Label(viewport, "", 24); Stretch(value.rectTransform);
+        TMP_Text placeholder = Label(viewport, "Enter number of tokens", 24); Stretch(placeholder.rectTransform); placeholder.color = muted;
+        value.alignment = TextAlignmentOptions.MidlineLeft;
+        placeholder.alignment = TextAlignmentOptions.MidlineLeft;
+        var input = entry.gameObject.AddComponent<TMP_InputField>();
+        input.targetGraphic = background;
+        input.textViewport = viewport;
+        input.textComponent = (TextMeshProUGUI)value;
+        input.placeholder = placeholder;
+        input.contentType = TMP_InputField.ContentType.IntegerNumber;
+        input.lineType = TMP_InputField.LineType.SingleLine;
+        input.characterLimit = 10;
+        entry.gameObject.SetActive(true);
+        TMP_Text feedback = null;
+        Button("Add tokens", () => {
+            if (!int.TryParse(input.text, out int amount) || amount <= 0)
+            { feedback.text = "Enter a positive whole number."; return; }
+            if (!CampaignProfile.AddTokens(amount))
+            { feedback.text = $"Amount too large. You can add up to {int.MaxValue - CampaignProfile.Data.earned} more tokens."; return; }
+            balance.text = $"TOKENS / Wallet: {CampaignProfile.Wallet}";
+            feedback.text = $"Added {amount} tokens.";
+            input.text = "";
+        });
+        feedback = Label(content, "Added tokens stay in your wallet and can be spent in the shop.", 20);
+        feedback.gameObject.AddComponent<LayoutElement>().preferredHeight = 55;
     }
     private void Slider(string title,float value,Action<float> change)
     {

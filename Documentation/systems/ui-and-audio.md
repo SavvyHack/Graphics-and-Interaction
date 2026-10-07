@@ -4,6 +4,8 @@
 CampaignUI supplies Home, Pause, Failure, map, Help, Shop/Wardrobe, Settings, Statistics and survivor outcomes. AudioManager routes saved volume settings to event cues and a quiet generated ambient loop. Pause/menu flow and displays passed developer checks. Human listening, keyboard-only browsing at all resolutions and browser user-gesture audio remain to check. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
 
 ## Earlier acceptance specification
+Home has a dedicated laboratory presentation in `Assets/Scripts/Presentation/CampaignUI.cs` (7 October): gold title and New Game emphasis, static decorative specimens, and a framed rat exhibit. The top-right badge and button outlines were removed at user request. Buttons use brighter hover/keyboard-focus fills and distinct pressed colours. The in-game Credits page and its Home/final-result links were removed; repository attributions remain. Background audio is unchanged. Decorations ignore raycasts and have no animation, so reduced-motion users see the same layout. Existing scroll/navigation and saved outfit preview remain. Open `Assets/Scenes/Home.unity` to review; Unity visual and interaction acceptance for this revision is pending.
+
 The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
 
 Status: target specification. Existing PrototypeHUD/AudioManager are starting points, not a complete menu system. Main scene HUD references are currently empty.

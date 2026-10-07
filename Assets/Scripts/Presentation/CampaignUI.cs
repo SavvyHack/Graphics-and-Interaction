@@ -12,6 +12,7 @@ using UnityEngine.UI;
 public class CampaignUI : MonoBehaviour
 {
     [SerializeField] private TMP_FontAsset font;
+    private static TMP_FontAsset defaultMenuFont;
     [SerializeField] private CampaignSession session;
     [SerializeField] private GameManager game;
     [SerializeField] private RatLifeManager lives;
@@ -34,6 +35,29 @@ public class CampaignUI : MonoBehaviour
     private readonly Color muted = new Color(.6f, .72f, .78f);
     private void Awake()
     {
+        // Bouncy Bun is the shared menu default. Keep scene fonts as glyph fallbacks.
+        if (defaultMenuFont == null)
+        {
+            Font source = Resources.Load<Font>("Fonts/BouncybunDemo-V4K8y");
+            if (source != null)
+            {
+                defaultMenuFont = TMP_FontAsset.CreateFontAsset(source, 90, 9,
+                    UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA, 2048, 2048,
+                    AtlasPopulationMode.Dynamic, true);
+                if (defaultMenuFont != null)
+                {
+                    defaultMenuFont.name = "Bouncy Bun Menu SDF";
+                    defaultMenuFont.fallbackFontAssetTable = new System.Collections.Generic.List<TMP_FontAsset>();
+                }
+            }
+            else Debug.LogError("Default menu font Bouncy Bun is missing from Resources/Fonts.", this);
+        }
+        if (defaultMenuFont != null)
+        {
+            if (font != null && font != defaultMenuFont && !defaultMenuFont.fallbackFontAssetTable.Contains(font))
+                defaultMenuFont.fallbackFontAssetTable.Add(font);
+            font = defaultMenuFont;
+        }
         CampaignSettings.Apply();
         var go = new GameObject("Campaign canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         go.transform.SetParent(transform, false); canvas = (RectTransform)go.transform;
@@ -122,14 +146,19 @@ public class CampaignUI : MonoBehaviour
         {
             Button button = MakeButton(menu, "BACK / ESC", returnTo);
             Place((RectTransform)button.transform, new Vector2(.82f,.90f), new Vector2(.94f,.96f));
-            var backLabel=button.GetComponentInChildren<TMP_Text>();backLabel.fontSize=18;backLabel.textWrappingMode=TextWrappingModes.NoWrap;
+            var backLabel=button.GetComponentInChildren<TMP_Text>();backLabel.fontSize=18;backLabel.fontSizeMax=18;backLabel.fontSizeMin=14;backLabel.textWrappingMode=TextWrappingModes.NoWrap;
         }
         noticeText.transform.SetAsLastSibling();
     }
     private void Copy(string text, int size = 24, float height = 80)
     {
         TMP_Text label = Label(content, text, size);
-        label.gameObject.AddComponent<LayoutElement>().preferredHeight = height;
+        // Paragraphs grow with the font's measured height instead of clipping ascenders.
+        label.enableAutoSizing = false;
+        label.alignment = TextAlignmentOptions.TopLeft;
+        var layout = label.gameObject.AddComponent<LayoutElement>();
+        layout.minHeight = height;
+        layout.preferredHeight = -1;
     }
     private Button Button(string text, Action click, bool enabled = true)
     {
@@ -156,7 +185,7 @@ public class CampaignUI : MonoBehaviour
             colors.selectedColor = colors.normalColor;
             button.colors = colors;
         }
-        TMP_Text label = Label(rect, text, 24); Stretch(label.rectTransform); label.rectTransform.offsetMin = new Vector2(18,4); label.rectTransform.offsetMax = new Vector2(-18,-4); label.alignment = TextAlignmentOptions.MidlineLeft;
+        TMP_Text label = Label(rect, text, 22); Stretch(label.rectTransform); label.rectTransform.offsetMin = new Vector2(18,6); label.rectTransform.offsetMax = new Vector2(-18,-6); label.alignment = TextAlignmentOptions.MidlineLeft;
         button.onClick.AddListener(() => { AudioManager.Instance?.PlayCheckpoint(); click(); });
         rect.gameObject.SetActive(true);
         return button;
@@ -165,6 +194,12 @@ public class CampaignUI : MonoBehaviour
     {
         RectTransform rect = Rect("Text", parent); var label = rect.gameObject.AddComponent<TextMeshProUGUI>();
         label.font = font; label.fontSize = size; label.text = text; label.color = Color.white;
+        label.enableAutoSizing = true;
+        label.fontSizeMin = Mathf.Max(14, size * .75f);
+        label.fontSizeMax = size;
+        label.alignment = TextAlignmentOptions.MidlineLeft;
+        label.margin = new Vector4(0, 3, 0, 3);
+        label.lineSpacing = 4;
         label.textWrappingMode = TextWrappingModes.Normal; label.raycastTarget = false;
         return label;
     }
@@ -257,7 +292,9 @@ public class CampaignUI : MonoBehaviour
         if (title != null)
         {
             title.text = "PROJECT <color=#FFD080>R.A.T.</color>";
-            title.fontSize = 54;
+            title.fontSize = 48;
+            title.fontSizeMax = 48;
+            title.fontSizeMin = 32;
             title.fontStyle = FontStyles.Bold;
             Place(title.rectTransform,new Vector2(.06f,.885f),new Vector2(.71f,.98f));
         }
@@ -299,7 +336,8 @@ public class CampaignUI : MonoBehaviour
             var button=MakeButton(map, $"{i+1:00}  {state}\n{CampaignCatalog.Names[i]}\n{CampaignProfile.Collected(i)}/20 unique coins", () => Load(index));
             button.interactable=unlocked;
             var rect=(RectTransform)button.transform; Place(rect,nodes[i]-new Vector2(.112f,.16f),nodes[i]+new Vector2(.112f,.16f));
-            button.GetComponentInChildren<TMP_Text>().fontSize=20;
+            var mapLabel = button.GetComponentInChildren<TMP_Text>();
+            mapLabel.fontSize=18; mapLabel.fontSizeMax=18; mapLabel.fontSizeMin=14;
             if(i==CampaignProfile.Data.selected) Focus(button);
         }
         Copy("Surviving rats carry into the next level. Retry restores the rats that entered that level. Coins return on a new attempt; outfits never protect a rat.",22,65);

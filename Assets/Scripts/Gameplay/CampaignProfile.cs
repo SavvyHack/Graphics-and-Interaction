@@ -8,9 +8,9 @@ public static class CampaignCatalog
     public static readonly string[] Ids = { "enclosure", "transfer", "relay", "coolant", "scanner", "containment", "escape" };
     public static readonly string[] Names = { "Augmentation Lab", "Reactor Divide", "Relay Archive", "Coolant Foundry", "Scanner Gallery", "Containment Core", "Escape Spire" };
     public static readonly string[] Scenes = { "Assets/Scenes/AugmentationLab.unity", "Assets/Scenes/ReactorDivide.unity", "Assets/Scenes/RelayArchive.unity", "Assets/Scenes/CoolantFoundry.unity", "Assets/Scenes/ScannerGallery.unity", "Assets/Scenes/ContainmentCore.unity", "Assets/Scenes/EscapeSpire.unity" };
-    public static readonly string[] OutfitIds = { "classic", "copper_patch", "lab_scarf", "technician" };
-    public static readonly string[] OutfitNames = { "Classic", "Copper Patch", "Lab Scarf", "Technician" };
-    public static readonly int[] Prices = { 0, 10, 20, 30 };
+    public static readonly string[] OutfitIds = { "classic", "copper_patch", "silver", "gold", "diamond", "rainbow" };
+    public static readonly string[] OutfitNames = { "Classic", "Copper", "Silver", "Gold", "Diamond", "Rainbow" };
+    public static readonly int[] Prices = { 0, 10, 100, 250, 500, 1000 };
     public static int Count => Ids.Length;
 }
 
@@ -217,6 +217,7 @@ public static class CampaignProfile
     public static bool Collect(string id)
     {
         if (!Playing || !ValidCoin(id) || !id.StartsWith(data.active.level + ":", StringComparison.Ordinal) || data.active.pickedCoins.Contains(id)) return false;
+        if (data.earned == int.MaxValue) { Notice = "Token storage is full."; return false; }
         data.active.pickedCoins.Add(id);
         if (!data.coins.Contains(id)) data.coins.Add(id);
         data.earned++; data.active.coins++; Save(); return true;
@@ -246,6 +247,14 @@ public static class CampaignProfile
     {
         if (outfit < 1 || outfit >= CampaignCatalog.OutfitIds.Length || Data.owned.Contains(CampaignCatalog.OutfitIds[outfit]) || Wallet < CampaignCatalog.Prices[outfit]) return false;
         data.spent += CampaignCatalog.Prices[outfit]; data.owned.Add(CampaignCatalog.OutfitIds[outfit]); Save(); return true;
+    }
+    public static bool AddTokens(int amount)
+    {
+        EnsureLoaded();
+        if (amount <= 0 || amount > int.MaxValue - data.earned) return false;
+        data.earned += amount;
+        Save();
+        return true;
     }
     public static void Equip(int outfit)
     {

@@ -3,7 +3,10 @@
 ## Implementation update - 6 October 2026
 CampaignUI and CampaignSettings implement the shared Settings page, persisted volume/mute, test cue/defaults, 0/4/8x MSAA, texture quality, VSync, desktop fullscreen and reduced decorative motion. ScreenSpaceOverlay TMP scales with resolution. Browser fullscreen/audio policies and laptop performance remain manual checks. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
 
-## Earlier acceptance specification
+## Token addition
+Settings includes a token amount field, Add tokens button, wallet balance and result message. Enter a positive whole number to credit the saved wallet immediately through CampaignProfile.AddTokens. Blank, negative, fractional and overflowing amounts are rejected. The existing 32-bit lifetime-earnings limit applies. Added tokens count as lifetime earnings but do not mark level tokens discovered or alter attempt pickup totals. Available from Home and Pause; verify text entry, invalid values, repeated clicks, Shop spending and relaunch in Unity. This supersedes historical specifications excluding token bonuses.
+
+## Earlier acceptance specification (historical)
 The requirements below are retained for design context; any old "not implemented" or three-level statements are superseded by the update above.
 
 Status: target specification; expands [UI/audio](ui-and-audio.md), not a claim of working settings.

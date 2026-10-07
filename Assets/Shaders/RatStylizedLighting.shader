@@ -17,6 +17,10 @@ Shader "Custom/RatStylizedLighting"
     {
         // Main rat colour
         _BaseColor ("Base Color", Color) = (0.85, 0.6, 0.3, 1)
+        // Codex-assisted cosmetic extension: optional scrolling rainbow stripes.
+        _RainbowBlend ("Rainbow Stripes", Range(0, 1)) = 0
+        _RainbowPhase ("Rainbow Scroll Phase", Float) = 0
+        _LuxuryFinish ("Luxury Finish (0 Off, 1 Gold, 2 Diamond)", Float) = 0
 
         // Colour used in darker/toon-shaded areas
         _ShadowColor ("Shadow Color", Color) = (0.25, 0.3, 0.4, 1)
@@ -77,6 +81,10 @@ Shader "Custom/RatStylizedLighting"
             // Properties
 
             fixed4 _BaseColor;
+            float _RainbowBlend;
+            float _RainbowPhase;
+            float _LuxuryFinish;
+            float4x4 _RainbowWorldToRat;
             fixed4 _ShadowColor;
 
             float _ToonSteps;
@@ -159,9 +167,16 @@ Shader "Custom/RatStylizedLighting"
 
                 // Blend shadow colour and rats base colour.
 
-                float3 shadowColour = _ShadowColor.rgb;
+                // A shared rat-local frame aligns the stripes across head and body,
+                // independent of each mesh's scale, pose and preview world position.
+                float3 ratPosition = mul(_RainbowWorldToRat, float4(i.worldPos, 1)).xyz;
+                float stripe = frac((ratPosition.z + ratPosition.y * 0.35) * 2.0 - _RainbowPhase);
+                float hue = floor(stripe * 7.0) / 7.0;
+                float3 rainbow = saturate(abs(frac(hue + float3(0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0) - 1.0);
+                float3 baseColour = lerp(_BaseColor.rgb, rainbow, _RainbowBlend);
+                float3 shadowColour = lerp(_ShadowColor.rgb, rainbow * 0.4, _RainbowBlend);
 
-                float3 litColour = _BaseColor.rgb;
+                float3 litColour = baseColour;
 
                 float3 toonColour = lerp(
                     shadowColour,
@@ -181,7 +196,7 @@ Shader "Custom/RatStylizedLighting"
 
                 float3 ambient =
                     UNITY_LIGHTMODEL_AMBIENT.rgb
-                    * _BaseColor.rgb;
+                    * baseColour;
 
 
                 // Rim Lighting
@@ -240,6 +255,38 @@ Shader "Custom/RatStylizedLighting"
                     + ambient
                     + rim
                     + specular;
+
+                // Codex-assisted outfit finishes; zero preserves the original shading.
+                if (_LuxuryFinish > 0.5 && _LuxuryFinish < 1.5)
+                {
+                    // Warm metallic body, broad polished reflection and a tight glint.
+                    float reflection = pow(saturate(dot(reflect(-V, N), normalize(float3(-0.4, 0.8, -0.5)))), 10.0);
+                    float highlight = pow(NdotH, 72.0);
+                    float edge = pow(1.0 - saturate(dot(N, V)), 3.0);
+                    finalColour = baseColour * (0.3 + 0.5 * NdotL)
+                        + float3(1.0, 0.81, 0.36) * reflection * 0.65
+                        + float3(1.0, 0.96, 0.75) * highlight * 1.1
+                        + float3(1.0, 0.7, 0.18) * edge * 0.3;
+                }
+                else if (_LuxuryFinish > 1.5)
+                {
+                    // Triangular cuts share the same body-local frame as the stripes.
+                    float2 crystal = float2(ratPosition.z + ratPosition.x * 0.45, ratPosition.y) * 9.0;
+                    float2 cell = floor(crystal);
+                    float2 facet = frac(crystal);
+                    float facetSide = step(facet.x, facet.y);
+                    float variation = frac(sin(dot(cell, float2(127.1, 311.7)) + facetSide * 74.7) * 43758.5453);
+                    float edgeDistance = min(min(facet.x, 1.0 - facet.x), min(facet.y, 1.0 - facet.y));
+                    edgeDistance = min(edgeDistance, abs(facet.x - facet.y) * 0.707);
+                    float cutLine = 1.0 - smoothstep(0.015, 0.055, edgeDistance);
+                    float3 crystalColour = lerp(float3(0.12, 0.48, 0.78), float3(0.8, 0.98, 1.0), variation);
+                    float glint = pow(saturate(NdotH + (variation - 0.5) * 0.12), 96.0);
+                    float edge = pow(1.0 - saturate(dot(N, V)), 3.0);
+                    finalColour = crystalColour * (0.55 + 0.35 * NdotL)
+                        + float3(0.65, 0.9, 1.0) * cutLine * 0.16
+                        + float3(0.8, 0.95, 1.0) * edge * 0.35
+                        + glint * 0.85;
+                }
 
 
                 // Prevent colour values from exceeding

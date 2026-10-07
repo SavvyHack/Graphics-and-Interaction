@@ -140,14 +140,25 @@ public class CampaignUI : MonoBehaviour
     }
     private Button MakeButton(Transform parent, string text, Action click)
     {
-        RectTransform rect = Rect(text, parent); var background = rect.gameObject.AddComponent<Image>();
+        RectTransform rect = Rect(text, parent);
+        // Selectable.OnEnable applies its initial tint instantly. Configure while
+        // inactive so rebuilt pages never fade from the default white tint.
+        rect.gameObject.SetActive(false);
+        var background = rect.gameObject.AddComponent<Image>();
         background.color = Color.white;
         Button button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = background;
         button.transition = Selectable.Transition.ColorTint;
         ColorBlock colors = button.colors; colors.normalColor = panel; colors.highlightedColor = new Color(.24f,.43f,.54f); colors.selectedColor = colors.highlightedColor; colors.pressedColor = new Color(.12f,.29f,.37f); colors.disabledColor = new Color(.08f,.1f,.12f); colors.fadeDuration = .08f; button.colors = colors;
+        // Selection persists after a click; Settings reserves persistent aqua for mute ON.
+        if (page == "Settings")
+        {
+            colors.selectedColor = colors.normalColor;
+            button.colors = colors;
+        }
         TMP_Text label = Label(rect, text, 24); Stretch(label.rectTransform); label.rectTransform.offsetMin = new Vector2(18,4); label.rectTransform.offsetMax = new Vector2(-18,-4); label.alignment = TextAlignmentOptions.MidlineLeft;
         button.onClick.AddListener(() => { AudioManager.Instance?.PlayCheckpoint(); click(); });
+        rect.gameObject.SetActive(true);
         return button;
     }
     private TMP_Text Label(Transform parent, string text, int size)
@@ -400,7 +411,14 @@ public class CampaignUI : MonoBehaviour
         Slider("Master volume",s.master,v=>s.master=v);
         Slider("Music / ambience",s.music,v=>s.music=v);
         Slider("Sound effects",s.effects,v=>s.effects=v);
-        Button(s.mute ? "Mute all: ON" : "Mute all: OFF",()=>{s.mute=!s.mute;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
+        Button muteButton = Button(s.mute ? "Mute all: ON" : "Mute all: OFF",()=>{s.mute=!s.mute;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});
+        if (s.mute)
+        {
+            ColorBlock muteColors = muteButton.colors;
+            muteColors.normalColor = muteColors.highlightedColor;
+            muteColors.selectedColor = muteColors.normalColor;
+            muteButton.colors = muteColors;
+        }
         Button("Test sound"+(s.mute||s.master==0||s.effects==0 ? " (silent at current settings)" : ""),()=>AudioManager.Instance?.PlayCheckpoint());
         string[] quality={"Performance","Balanced (4× anti-aliasing)","High (8× anti-aliasing)"};
         Button("Graphics: "+quality[s.quality],()=>{s.quality=(s.quality+1)%3;CampaignSettings.Apply();CampaignProfile.Save();ShowSettings(returnTo);});

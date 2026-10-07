@@ -25,7 +25,13 @@ One GameManager, RatLifeManager and PlayerRatController per level. Three rats on
 
 ## Verified: levels 3-7 enclosure rebuild (branch `feature/enclosure-levels-3-7`)
 - `EnclosureLevelBuilder.BuildAll` compiled and rebuilt all five scenes in batch mode (9, 9, 8, 9 and 7 checkpoints; 20 tokens each). `FireParticleAuthoring` placed fire particles in every vent: 4, 5, 5 and 5 (Scanner Gallery has no vents). Levels 1-2 are unchanged.
-- `CampaignValidation.RunPlayChecks` passed end to end (`RAT_CAMPAIGN_PLAYMODE_OK`, 116 route assertions, 70 of them in levels 3-7).
+- `CampaignValidation.RunPlayChecks` passed end to end (`RAT_CAMPAIGN_PLAYMODE_OK`, 124 route assertions, 77 of them in levels 3-7).
+- Wheel traps were impassable in every level, including level 1: two crossed arms on a low hub always swept rat height. They now have one arm on a hub 2.1m up, with timed wheels at 60-95 degrees/s. The level 1 scene changed only for this.
+  - Every timed wheel (levels 1, 3, 4, 5, 6 x2, 7 x2) passed a crossing check at normal speed without augments.
+  - Hazards that sat where dash landings slide were moved back (levels 3, 4 and 6).
+- Glides were too long at walking speed and are now shorter. Level 5's practice gap is 8.5m, and the floor 3 glide lost its mid-air electric gate and lands nearer. Mid-gap updrafts are 4m wide.
+  - Updraft lift eases off near the top, so a rat hovers instead of overshooting into coolant pits overhead.
+  - Glide checks now run at walking speed. The full check still passes (124 assertions, 77 in levels 3-7).
   - Every new-augment crossing and every climb between floors passed, including all wall-jump chimneys, updraft climbs, phase gauntlets, hatch pounds and the exit vault.
   - Negative checks passed: the dash and glide gaps, a chimney, a containment field and the first hatch bulkhead are impassable without their augment.
   - Segments reposition the rat, so this is not a continuous human playthrough.

@@ -45,7 +45,8 @@ public static class EnclosureRouteChecks
         // A final crossing may carry the rat straight into the exit, which ends the level.
         if (Won) { Require(lives.LivesRemaining == livesBefore, message + " (reached the exit)"); yield break; }
         yield return Wait(0.3f);
-        Require(lives.LivesRemaining == livesBefore && Grounded && P.y >= landingY - 0.15f, message);
+        Require(lives.LivesRemaining == livesBefore && Grounded && P.y >= landingY - 0.15f,
+            message + $" [lives {lives.LivesRemaining}/{livesBefore}, grounded {Grounded}]");
     }
 
     /// <summary>Sprint, jump at takeoff, dash at the apex, land past target.</summary>
@@ -128,7 +129,7 @@ public static class EnclosureRouteChecks
     private static IEnumerator Glide(float from, float y, float takeoff, float target, float landingY, string message, params RatAugment[] extra)
     {
         yield return Spawn(from, y, extra.Append(RatAugment.Glide).ToArray()); int count = lives.LivesRemaining;
-        bool right = target > from; Key[] run = { right ? Key.D : Key.A, Key.LeftShift };
+        bool right = target > from; Key[] run = { right ? Key.D : Key.A }; // Walking, not sprinting.
         Press(run); yield return Until(() => right ? P.x >= takeoff : P.x <= takeoff, 4f, message + " approach");
         Key[] glide = run.Append(Key.Space).ToArray();
         Press(glide); yield return null; yield return null;
@@ -174,11 +175,39 @@ public static class EnclosureRouteChecks
         Require(!hatch.IsBroken, "A new rat finds the hatch restored");
     }
 
-    public static IEnumerator Check(int index, Action<Key[]> press)
+    private static void Init(Action<Key[]> press)
     {
         input = press;
         player = Object.FindFirstObjectByType<PlayerRatController>(); body = player.GetComponent<CharacterController>();
         powers = player.GetComponent<RatPowerups>(); lives = Object.FindFirstObjectByType<RatLifeManager>();
+    }
+
+    /// <summary>
+    /// Wait beside a wheel until its arm has just swung clear of vertical, then sprint underneath
+    /// with no augments. Proves the wheel is passable at normal speed.
+    /// </summary>
+    private static IEnumerator WheelCross(float hubX, float top, bool leftward, string message)
+    {
+        yield return Spawn(leftward ? hubX + 2.1f : hubX - 2.1f, top); int count = lives.LivesRemaining;
+        TrialWheel wheel = Object.FindObjectsByType<TrialWheel>(FindObjectsSortMode.None)
+            .OrderBy(w => Vector2.Distance(w.transform.position, new Vector2(hubX, top + 2.1f))).First();
+        yield return Until(() => { float a = Mathf.Repeat(wheel.transform.eulerAngles.z, 180f); return a > 45f && a < 60f; }, 6f, message + " timing");
+        Press(leftward ? Key.A : Key.D, Key.LeftShift);
+        yield return Until(() => leftward ? P.x <= hubX - 2.2f : P.x >= hubX + 2.2f, 2f, message + " crossing");
+        yield return Settle(top, message, count);
+    }
+
+    /// <summary>Wheel check for a reference level (1-2), called from CampaignValidation.</summary>
+    public static IEnumerator Wheel(Action<Key[]> press, float hubX, float top, bool leftward, string message)
+    {
+        Init(press);
+        yield return WheelCross(hubX, top, leftward, message);
+        Press(); powers.ResetPowers();
+    }
+
+    public static IEnumerator Check(int index, Action<Key[]> press)
+    {
+        Init(press);
         Require(Object.FindObjectsByType<Checkpoint>(FindObjectsSortMode.None).Length >= 7, "Stage " + (index + 1) + " has its checkpoints");
         switch (index)
         {
@@ -202,6 +231,7 @@ public static class EnclosureRouteChecks
         yield return Jump(8.5f, T2, 5.6f, 3.4f, 9.5f, "L3 double jump onto the left perch", true);
         yield return Climb(2.2f, 9.5f, Key.D, 11.7f, T3, "L3 left perch to floor 3", RatAugment.DoubleJump);
         yield return JumpDash(6.5f, T3, 10.2f, 25f, T3, "L3 speed dash across floor 3", true);
+        yield return WheelCross(35.5f, T4, true, "L3 time the floor 4 wheel");
         yield return JumpDash(32.6f, T4, 31.3f, 22.1f, T4, "L3 dash across the floor 4 gap");
         yield return Climb(3f, T4, Key.D, 22.4f, T5, "L3 jetpack shaft to floor 5", RatAugment.Jetpack);
         yield return JumpDash(26f, T5, 27.7f, 36.6f, T5, "L3 dash over the extraction pit");
@@ -215,6 +245,7 @@ public static class EnclosureRouteChecks
         yield return JumpDash(34f, T2, 32.3f, 23.5f, T2, "L4 dash over the floor 2 pit");
         yield return WallClimb(2f, T2, 0.7f, 3.2f, T3, "L4 wall jump up the left chimney");
         yield return WallClimb(41.4f, T3, 42.6f, 40.2f, T4, "L4 wall jump to floor 4");
+        yield return WheelCross(35f, T4, true, "L4 time the floor 4 wheel");
         yield return JumpDash(32.6f, T4, 30.3f, 21.5f, T4, "L4 dash across the floor 4 gap");
         yield return WallClimb(2f, T4, 0.7f, 3.2f, T5, "L4 wall jump to floor 5");
         yield return JumpDash(18.4f, T5, 19.7f, 27.6f, T5, "L4 dash over the extraction pit");
@@ -222,13 +253,14 @@ public static class EnclosureRouteChecks
 
     private static IEnumerator ScannerGallery()
     {
-        yield return FallsShort(10.5f, 3f, 11.2f, 24f, "L5 practice gap needs a glide");
-        yield return Glide(10.2f, 3f, 11.2f, 24.6f, 2.6f, "L5 glide onto the landing");
+        yield return FallsShort(10.5f, 3f, 11.2f, 20f, "L5 practice gap needs a glide");
+        yield return Glide(10.2f, 3f, 11.2f, 20.6f, 2.6f, "L5 walking glide onto the landing");
         yield return Rise(33f, T1, 7.5f, Key.A, 30.2f, T2, "L5 updraft to floor 2");
         yield return Rise(2.5f, T2, 12.6f, Key.D, 5.2f, T3, "L5 updraft to floor 3");
-        yield return Glide(9f, T3, 11.7f, 30.6f, T3, "L5 glide through the gallery updraft", RatAugment.Shield);
+        yield return Glide(9f, T3, 11.7f, 26.1f, T3, "L5 walking glide through the gallery updraft");
         yield return WallClimb(41.4f, T3, 42.6f, 40.2f, T4, "L5 wall jump to floor 4");
-        yield return Glide(30f, T4, 28.3f, 11.4f, T4, "L5 glide over coolant using the updraft");
+        yield return WheelCross(34f, T4, true, "L5 time the floor 4 wheel");
+        yield return Glide(30f, T4, 28.3f, 12.4f, T4, "L5 walking glide over coolant using the updraft");
         yield return Rise(2.5f, T4, 22.9f, Key.D, 5.2f, T5, "L5 updraft to floor 5");
     }
 
@@ -246,12 +278,14 @@ public static class EnclosureRouteChecks
         yield return Spawn(37.5f, T2);
         yield return Walk(26.5f, "L6 phase through the field chain", RatAugment.Phase);
         yield return Jump(29f, T2, 26.1f, 19.5f, T2, "L6 phase out and jump the floor 2 pit", false, RatAugment.Phase);
+        yield return WheelCross(13f, T2, true, "L6 time the floor 2 wheel");
         yield return Climb(3f, T2, Key.D, 12f, T3, "L6 jetpack shaft to floor 3", RatAugment.Jetpack);
         yield return Jump(15f, T3, 15.8f, 22.6f, T3, "L6 jump the sealed pit");
         yield return Rise(41.5f, T3, 17.4f, Key.A, 39f, T4, "L6 updraft to floor 4");
+        yield return WheelCross(34.5f, T4, true, "L6 time the floor 4 wheel");
         yield return JumpDash(32.6f, T4, 31.3f, 22.4f, T4, "L6 dash across the floor 4 gap");
-        yield return Spawn(20.5f, T4);
-        yield return Walk(10.5f, "L6 phase through the floor 4 gauntlet", RatAugment.Phase);
+        yield return Spawn(19f, T4);
+        yield return Walk(7.6f, "L6 phase through the floor 4 gauntlet", RatAugment.Phase);
         yield return WallClimb(2f, T4, 0.7f, 3.2f, T5, "L6 wall jump to floor 5");
         yield return Spawn(7.5f, T5);
         yield return Walk(21f, "L6 phase through the core breach", RatAugment.Phase);
@@ -265,6 +299,7 @@ public static class EnclosureRouteChecks
         yield return Spawn(16.5f, 0.3f);
         yield return Walk(14.2f, "L7 crawl under the bulkhead");
         yield return Jump(17f, 0.3f, 20.3f, 22f, T1, "L7 climb out of the trench");
+        yield return WheelCross(34.5f, T1, false, "L7 time the floor 1 wheel");
         yield return Jump(37f, T1, 38f, 40.2f, 4.3f, "L7 double jump onto the perch", true);
         yield return Climb(41.5f, 4.3f, Key.A, 6.6f, T2, "L7 perch to floor 2", RatAugment.DoubleJump);
         yield return Pound(31f, T2, 4.6f, "L7 pound into the service channel");
@@ -273,8 +308,9 @@ public static class EnclosureRouteChecks
         yield return Jump(23.4f, 3.7f, 23f, 22f, 4.7f, "L7 hop onto the channel step");
         yield return Jump(22f, 4.7f, 21.3f, 19.6f, T2, "L7 climb out of the channel");
         yield return WallClimb(2f, T2, 0.7f, 3.2f, T3, "L7 wall jump to floor 3");
-        yield return Glide(22f, T3, 23.7f, 38.8f, T3, "L7 glide to the far chimney using the updraft");
+        yield return Glide(22f, T3, 23.7f, 38.8f, T3, "L7 walking glide to the far chimney using the updraft");
         yield return WallClimb(41.4f, T3, 42.6f, 40.2f, T4, "L7 wall jump to floor 4");
+        yield return WheelCross(28.5f, T4, true, "L7 time the floor 4 wheel");
         yield return Pound(20f, T4, 15f, "L7 pound into the core channel");
         yield return Spawn(20f, 14.1f);
         yield return Walk(10f, "L7 crawl under the core bulkhead");

@@ -167,6 +167,7 @@ public static class CampaignValidation
         var coin=All<CoinPickup>().OrderBy(c=>c.transform.position.x).First();One<PlayerRatController>().Respawn(coin.transform.position-Vector3.up*.25f);yield return 8;
         Require(CampaignProfile.Wallet==1,"Real trigger collects a token once.");
         yield return ReferenceRouteChecks.Check(0,Press);
+        yield return EnclosureRouteChecks.Wheel(Press,27.5f,16.6f,true,"L1 time the rotation deck wheel");
         GameManager.Instance.RequestWin();yield return 4;Require(One<CampaignSession>().Result.survivors==3,"Win snapshots remaining rats.");Click("Next level");yield return 20;
         Require(One<CampaignSession>().LevelIndex==1,"Next opens Reactor Divide.");
         Capture("level-2");yield return ReferenceRouteChecks.Check(1,Press);

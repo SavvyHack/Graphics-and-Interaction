@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEditor;
@@ -35,6 +34,7 @@ public static class EnclosureLevelBuilder
     [MenuItem("Project RAT/Rebuild Enclosure Levels 3-7")]
     public static void BuildAll()
     {
+        FixWheelTraps(); // The template's wheel is cloned into every level, so fix it first.
         PrepareMaterials();
         for (int i = 2; i < CampaignCatalog.Count; i++) Build(i);
         FireParticleAuthoring.Build();
@@ -47,8 +47,10 @@ public static class EnclosureLevelBuilder
     private static void Build(int index)
     {
         string path = CampaignCatalog.Scenes[index];
-        File.Copy(TemplatePath, path, true); // The target's .meta, and so its scene GUID, is untouched.
-        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+        // Save the template over the target through Unity, not a raw file copy: the asset worker can
+        // briefly hold freshly written scenes open. The target's .meta (scene GUID) is kept.
+        Scene template = EditorSceneManager.OpenScene(TemplatePath, OpenSceneMode.Single);
+        if (!EditorSceneManager.SaveScene(template, path, true)) throw new Exception("Could not write " + path);
         Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
         levelIndex = index; checkpointNumber = 0; coinNumber = 0;
 
@@ -104,7 +106,7 @@ public static class EnclosureLevelBuilder
         Label("<  SHIELD, THEN DASH THE GAP", 28.5f, 10f);
         Deck("Vent gallery", 0.7f, 24.5f, T2);
         Checkpoint(23f, T2);
-        Vent(19f, T2, 1.5f, 2.4f, 0f); Vent(13.5f, T2, 1.5f, 2.4f, 1.9f);
+        Vent(17f, T2, 1.5f, 2.4f, 0f); Vent(12f, T2, 1.5f, 2.4f, 1.9f); // Clear of the dash landing (~x 21).
         Label("<  WAIT FOR THE VENTS", 16f, 9.9f);
         Orb(RatAugment.DoubleJump, 8f, T2);
         Riser(0.7f, 4f, T2, 9.5f); Deck("Left double jump perch", 0.7f, 4f, 9.5f);
@@ -117,18 +119,18 @@ public static class EnclosureLevelBuilder
         Label("SPEED + DASH  >", 17.5f, 15f);
         Deck("Relay deck", 24.5f, 39.5f, T3);
         Checkpoint(26f, T3);
-        ElectricGate(32f, T3, 1.5f, 2.4f, 0f);
+        ElectricGate(34f, T3, 1.5f, 2.4f, 0f); // Clear of the speed-dash landing (~x 31).
         Elevator(41.3f, T3);
 
         Section("04 - Floor 4 / dash the wheel");
         Deck("Wheel deck", 31f, 39.4f, T4);
         Checkpoint(39f, T4);
         Orb(RatAugment.Dash, 37.7f, T4);
-        Wheel(35.5f, T4, 65f);
+        Wheel(35.5f, T4, 60f);
         Label("<  DASH PAST THE WHEEL, THEN THE GAP", 28f, 19.4f);
         Deck("Jet deck", 6f, 22.5f, T4);
         Checkpoint(21f, T4);
-        Vent(17f, T4, 1.2f, 1.8f, 0f); Vent(12f, T4, 1.2f, 1.8f, 1f);
+        Vent(15f, T4, 1.2f, 1.8f, 0f); Vent(10.5f, T4, 1.2f, 1.8f, 1f); // Clear of the dash landing (~x 19).
         Orb(RatAugment.Jetpack, 8f, T4);
         Label("JETPACK  ^", 3.4f, 19.8f);
 
@@ -143,9 +145,9 @@ public static class EnclosureLevelBuilder
         Deck("Extraction deck", 36f, 43.3f, T5);
 
         Coins(4f, 1.7f, 12.5f, 1f, 19f, 3.3f, 26.5f, 4.6f, 34f, 1.7f,
-              36f, 6.9f, 28.5f, 8.4f, 21f, 6.9f, 16.2f, 6.9f, 9f, 6.9f, 2.4f, 10.2f,
+              36f, 6.9f, 28.5f, 8.4f, 21f, 6.9f, 14.5f, 6.9f, 9f, 6.9f, 2.4f, 10.2f,
               8.2f, 12.1f, 17.5f, 14f, 28.5f, 12.1f, 36f, 12.1f,
-              33f, 17.3f, 27f, 18.8f, 14.5f, 17.3f,
+              33f, 17.3f, 27f, 18.8f, 12.8f, 17.3f,
               19f, 22.5f, 32f, 24.3f);
     }
 
@@ -176,8 +178,8 @@ public static class EnclosureLevelBuilder
         Label("<  DASH OVER THE PIT", 28f, 8.9f);
         Deck("Casting floor", 0.7f, 24f, T2);
         Checkpoint(22.5f, T2);
-        ElectricGate(18f, T2, 1.4f, 2.2f, 0f);
-        Vent(13f, T2, 1.2f, 1.6f, 0f); Vent(8.6f, T2, 1.2f, 1.6f, 0.9f);
+        ElectricGate(16f, T2, 1.4f, 2.2f, 0f); // Clear of the dash landing (~x 20).
+        Vent(12.5f, T2, 1.2f, 1.6f, 0f); Vent(8.6f, T2, 1.2f, 1.6f, 0.9f);
         Orb(RatAugment.WallJump, 6f, T2);
         Chimney(0.7f, 3.2f, T2, T3, false);
 
@@ -198,12 +200,12 @@ public static class EnclosureLevelBuilder
         Deck("Wheel deck", 30f, 40.2f, T4);
         Checkpoint(38.8f, T4);
         Orb(RatAugment.SlowTime, 37.5f, T4);
-        Wheel(35f, T4, 80f);
+        Wheel(35f, T4, 70f);
         Orb(RatAugment.Dash, 32f, T4);
         Label("<  DASH", 26f, 19.4f);
         Deck("Furnace deck", 0.7f, 22f, T4);
         Checkpoint(20.5f, T4);
-        Vent(16f, T4, 1.2f, 1.6f, 0f); Vent(11.5f, T4, 1.2f, 1.6f, 0.8f);
+        Vent(13.5f, T4, 1.2f, 1.6f, 0f); Vent(9.5f, T4, 1.2f, 1.6f, 0.8f); // Clear of the dash landing (~x 18).
         Orb(RatAugment.WallJump, 6.5f, T4);
         Chimney(0.7f, 3.2f, T4, T5, false);
 
@@ -215,13 +217,13 @@ public static class EnclosureLevelBuilder
         ElectricGate(17.5f, T5, 1.2f, 1.8f, 0.5f);
         Coolant(20f, 27f, T5, true);
         Deck("Extraction deck", 27f, 43.3f, T5);
-        Vent(31f, T5, 1.2f, 1.6f, 0f);
+        Vent(34.5f, T5, 1.2f, 1.6f, 0f); // Clear of the dash landing (~x 32).
 
         Coins(4f, 1.7f, 11f, 3.2f, 19f, 1.7f, 30f, 3.4f, 41.4f, 4.5f,
-              36f, 6.9f, 28f, 8.6f, 20f, 6.9f, 11f, 6.9f, 2f, 9.6f,
+              36f, 6.9f, 28f, 8.6f, 20f, 6.9f, 14.2f, 6.9f, 2f, 9.6f,
               9.5f, 12.1f, 23f, 13.8f, 35.5f, 12.1f, 41.4f, 14.5f,
-              31f, 17.3f, 26f, 18.8f, 13.5f, 17.3f,
-              24f, 23.8f, 34f, 22.5f, 2f, 20f);
+              31f, 17.3f, 26f, 18.8f, 11.5f, 17.3f,
+              24f, 23.8f, 38f, 22.5f, 2f, 20f);
     }
 
     // ---------------------------------------------------------------- Level 5: Glide and updrafts
@@ -233,10 +235,11 @@ public static class EnclosureLevelBuilder
         Riser(8f, 9.5f, -0.25f, 2f); Deck("Launch step", 8f, 9.5f, 2f);
         Riser(9.5f, 11.5f, -0.25f, 3f); Deck("Launch tower", 9.5f, 11.5f, 3f);
         Label("JUMP, THEN HOLD SPACE  >", 15f, 5f);
-        Deck("Practice trench floor", 11.5f, 24f, 0.3f);
+        // 8.5m gap: a walking glide clears about 12m; a sprint jump without glide only about 7.3m.
+        Deck("Practice trench floor", 11.5f, 20f, 0.3f);
         Riser(11.5f, 13f, -0.25f, 1.5f); Deck("Trench step", 11.5f, 13f, 1.5f);
-        Riser(24f, 31f, -0.25f, 2.6f); Deck("Glide landing", 24f, 31f, 2.6f);
-        Checkpoint(25.5f, 2.6f);
+        Riser(20f, 31f, -0.25f, 2.6f); Deck("Glide landing", 20f, 31f, 2.6f);
+        Checkpoint(21.5f, 2.6f);
         Orb(RatAugment.Glide, 29.5f, 2.6f);
         Deck("Updraft floor", 31f, 43.3f, T1);
         Updraft(31.6f, 34.4f, T1, 8.2f);
@@ -258,10 +261,11 @@ public static class EnclosureLevelBuilder
         Deck("Gallery launch", 4.3f, 12f, T3);
         Checkpoint(6f, T3);
         Orb(RatAugment.Glide, 8f, T3); Orb(RatAugment.Dash, 10.5f, T3);
-        Label("GLIDE  >  UPDRAFT  >  TIME THE ARC", 21f, 16f);
-        Updraft(19f, 21f, 9f, 14.4f);
-        ElectricGate(25.5f, 11.2f, 1.2f, 1.8f, 0f);
-        Deck("Gallery landing", 30f, 42.6f, T3);
+        Label("GLIDE  >  HOVER IN THE UPDRAFT  >  GLIDE ON", 21f, 14.7f);
+        // 4m wide so even a rat gliding straight through at walking speed reaches the top.
+        // The top stays low enough that a rising rat never touches floor 4's coolant pit overhead.
+        Updraft(17f, 21f, 9f, 14.3f);
+        Deck("Gallery landing", 25.5f, 42.6f, T3);
         Checkpoint(31.5f, T3);
         Orb(RatAugment.WallJump, 34f, T3);
         Chimney(39.6f, 42.6f, T3, T4, true);
@@ -271,10 +275,10 @@ public static class EnclosureLevelBuilder
         Checkpoint(38.6f, T4);
         Wheel(34f, T4, 75f);
         Orb(RatAugment.Glide, 31f, T4); Orb(RatAugment.Dash, 29.5f, T4);
-        Coolant(12f, 28f, T4, true);
-        Updraft(19f, 21f, T4 - 1f, 19.6f);
+        Coolant(13f, 28f, T4, true);
+        Updraft(18f, 22f, T4 - 1f, 19.6f); // 4m wide: see floor 3.
         Label("<  CATCH THE UPDRAFT", 20f, 21f);
-        Deck("Far deck", 0.7f, 12f, T4);
+        Deck("Far deck", 0.7f, 13f, T4);
         Checkpoint(10.5f, T4);
         Orb(RatAugment.Glide, 7.5f, T4);
         Updraft(1.2f, 3.8f, T4, 23.8f);
@@ -288,9 +292,9 @@ public static class EnclosureLevelBuilder
         MagneticGate(27f, T5);
         ElectricGate(32f, T5, 1f, 1.4f, 0f);
 
-        Coins(4f, 1.7f, 10.5f, 3.7f, 17.5f, 4.8f, 18f, 1f, 27.5f, 3.3f, 37f, 1.7f,
+        Coins(4f, 1.7f, 10.5f, 3.7f, 15.5f, 4.8f, 16f, 1f, 27.5f, 3.3f, 37f, 1.7f,
               24f, 6.9f, 16.5f, 6.9f, 9f, 6.9f, 2.5f, 10f,
-              7f, 12.1f, 20f, 14.2f, 27.5f, 14f, 36f, 12.1f,
+              7f, 12.1f, 19f, 14.3f, 23.5f, 13.6f, 36f, 12.1f,
               36f, 17.3f, 20f, 19.2f, 5f, 17.3f,
               9.5f, 22.5f, 35.5f, 22.5f, 41.4f, 14.5f);
     }
@@ -329,7 +333,7 @@ public static class EnclosureLevelBuilder
         Deck("Core gallery", 6f, 20f, T2);
         Checkpoint(18.5f, T2);
         Orb(RatAugment.SlowTime, 16.5f, T2);
-        Wheel(13f, T2, 100f);
+        Wheel(13f, T2, 85f);
         Vent(9.5f, T2, 1f, 1.4f, 0f);
         Orb(RatAugment.Jetpack, 7f, T2);
         Label("JETPACK  ^", 3.4f, 9.8f);
@@ -353,16 +357,16 @@ public static class EnclosureLevelBuilder
         Deck("Gauntlet deck", 31f, 39.6f, T4);
         Checkpoint(39.2f, T4);
         Orb(RatAugment.Phase, 38.3f, T4); Orb(RatAugment.Dash, 36.8f, T4);
-        Wheel(34.5f, T4, 95f);
+        Wheel(34.5f, T4, 90f);
         Label("<  PHASE, THEN DASH", 26f, 19.4f);
         Deck("Core deck", 0.7f, 23f, T4);
-        Checkpoint(21.5f, T4);
-        Orb(RatAugment.Phase, 20f, T4);
-        Laser(18f, T4, 3.6f);
-        Vent(15.5f, T4, 2.6f, 0.6f, 0f);
-        Laser(13f, T4, 3.6f);
-        PhaseField(11f, T4, T5 - 0.48f);
-        Orb(RatAugment.WallJump, 9f, T4);
+        Checkpoint(20.5f, T4);
+        Orb(RatAugment.Phase, 17.8f, T4); // The gauntlet starts clear of the dash landing (~x 19.5).
+        Laser(15.8f, T4, 3.6f);
+        Vent(13.3f, T4, 2.6f, 0.6f, 0f);
+        Laser(10.8f, T4, 3.6f);
+        PhaseField(8.8f, T4, T5 - 0.48f);
+        Orb(RatAugment.WallJump, 6.3f, T4);
         Chimney(0.7f, 3.2f, T4, T5, false);
 
         Section("05 - Floor 5 / core breach");
@@ -384,7 +388,7 @@ public static class EnclosureLevelBuilder
         Coins(4f, 1.7f, 11f, 1.7f, 17.8f, 1.7f, 26.5f, 3.2f, 33f, 1.7f, 41.4f, 4.5f,
               36f, 6.9f, 23f, 8.6f, 15f, 6.9f, 3.4f, 9.5f,
               9f, 12.1f, 19f, 13.6f, 29f, 12.1f, 41.5f, 15f,
-              32.2f, 17.3f, 27f, 18.8f, 16.5f, 17.3f, 2f, 20f,
+              32.2f, 17.3f, 27f, 18.8f, 22f, 17.3f, 2f, 20f,
               31.5f, 24f, 38f, 22.5f);
     }
 
@@ -403,7 +407,7 @@ public static class EnclosureLevelBuilder
         Deck("Spire floor", 21f, 39.6f, T1);
         Checkpoint(22.5f, T1);
         Orb(RatAugment.SlowTime, 25f, T1);
-        Wheel(34.5f, T1, 100f);
+        Wheel(34.5f, T1, 85f);
         Orb(RatAugment.DoubleJump, 37.3f, T1);
         Riser(39.6f, 43.3f, -0.25f, 4.3f); Deck("Double jump perch", 39.6f, 43.3f, 4.3f);
 
@@ -432,7 +436,7 @@ public static class EnclosureLevelBuilder
         Vent(9.5f, T3, 1f, 1.4f, 0f); Vent(13.5f, T3, 1f, 1.4f, 0.6f);
         Orb(RatAugment.Glide, 19f, T3); Orb(RatAugment.Dash, 20.8f, T3); Orb(RatAugment.WallJump, 22.6f, T3);
         Coolant(24f, 38.5f, T3, true);
-        Updraft(29.5f, 31.5f, T3 - 1f, 14.8f);
+        Updraft(28.5f, 32.5f, T3 - 1f, 14.8f); // 4m wide so a walking glide reaches the top.
         Label("GLIDE  >  UPDRAFT  >  CHIMNEY", 31f, 15.4f);
         Deck("Chimney floor", 38.5f, 42.6f, T3);
         Checkpoint(39f, T3);
@@ -444,7 +448,7 @@ public static class EnclosureLevelBuilder
         Orb(RatAugment.GroundPound, 37f, T4);
         ElectricGate(34f, T4, 1f, 1.2f, 0f);
         Orb(RatAugment.SlowTime, 31.5f, T4);
-        Wheel(28.5f, T4, 110f);
+        Wheel(28.5f, T4, 95f);
         Hatch(19f, 21f, T4);
         Wall("Core bulkhead", 17.5f, 18.5f, 15.3f, T5 - 0.48f, false);
         Deck("Core channel", 6f, 21f, 14.1f);
@@ -633,9 +637,38 @@ public static class EnclosureLevelBuilder
         cycle.onSeconds = on; cycle.offSeconds = off; cycle.phase = phase;
     }
 
+    /// <summary>
+    /// The reference wheel had two crossed arms on a hub 1.3m up, so a blade always swept through
+    /// rat height and it could never be passed. A passable wheel keeps one arm (two blades) and a
+    /// hub 2.1m up: the blades only reach a standing rat within about 43 degrees of vertical, which
+    /// leaves a clear window every half turn. Idempotent; applied to the template (level 1).
+    /// </summary>
+    [MenuItem("Project RAT/Make Wheel Traps Passable")]
+    public static void FixWheelTraps()
+    {
+        Scene scene = EditorSceneManager.OpenScene(TemplatePath, OpenSceneMode.Single);
+        int fixedCount = 0;
+        foreach (TrialWheel wheel in All<TrialWheel>())
+        {
+            var arms = wheel.transform.Cast<Transform>().Where(t => t.name == "Wheel sweep arm").ToList();
+            if (arms.Count < 2) continue;
+            foreach (Transform crossArm in arms.Where(t => Quaternion.Angle(t.localRotation, Quaternion.identity) > 1f))
+                Object.DestroyImmediate(crossArm.gameObject);
+            wheel.transform.position += Vector3.up * (WheelHubHeight - 1.3f);
+            fixedCount++;
+        }
+        if (fixedCount == 0) return;
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        Debug.Log($"RAT_WHEELS_FIXED {fixedCount} in {TemplatePath}");
+    }
+
+    private const float WheelHubHeight = 2.1f;
+
     private static void Wheel(float x, float top, float degreesPerSecond)
     {
-        var wheel = Clone(Tpl("Sweep wheel", 27.5f, 17.9f), x - 27.5f, top - T4);
+        var wheel = Clone(Tpl("Sweep wheel", 27.5f, T4 + WheelHubHeight), 0, 0);
+        wheel.transform.position = new Vector3(x, top + WheelHubHeight, wheel.transform.position.z);
         wheel.GetComponent<TrialWheel>().degreesPerSecond = degreesPerSecond;
     }
 

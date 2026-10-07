@@ -244,8 +244,10 @@ public class PlayerRatController : MonoBehaviour
         bool jetting = held && powerups.Has(RatAugment.Jetpack) && powerups.JetFuel > 0f;
         if (held && !jetting && powerups.Has(RatAugment.Glide))
         {
-            bool lifted = Updraft.Lifts(transform.position + controller.center);
-            if (lifted) verticalVelocity = Mathf.MoveTowards(verticalVelocity, updraftSpeed, 40f * Time.deltaTime);
+            float headroom = Updraft.Headroom(transform.position + controller.center);
+            bool lifted = headroom >= 0f;
+            // Lift eases off over the top 1.2m so the rat hovers at the column top instead of overshooting it.
+            if (lifted) verticalVelocity = Mathf.MoveTowards(verticalVelocity, updraftSpeed * Mathf.Clamp01(headroom / 1.2f), 40f * Time.deltaTime);
             else verticalVelocity = Mathf.Max(verticalVelocity, -glideFallSpeed);
             IsGliding = lifted || verticalVelocity <= 0f;
         }

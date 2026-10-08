@@ -38,6 +38,10 @@ One GameManager, RatLifeManager and PlayerRatController per level. Three rats on
 - Rendered overviews of all five levels were inspected; label overlaps and an unforgiving floating perch were fixed.
 - The old level-3 portal, latch and crate runtime checks were removed with those puzzles.
 
+## Verified: readable level signs (branch `feature/readable-level-labels`)
+- `LevelLabelStyle.ApplyAll` restyled 242 signs across the seven levels and separated 15 collisions. See [UI notes](systems/ui-and-audio.md) for the font, colours and placement.
+- Before and after renders at gameplay zoom were inspected.
+
 ## Outstanding and limits
 - Bouncy Bun typography on main (user explicitly requested main): source OTF and supplied source/licence note copied into Assets/Resources/Fonts. CampaignUI creates one shared dynamic TMP SDF asset, uses it across Home/gameplay menus and keeps serialized scene fonts as missing-glyph fallbacks. Button/map/title sizes and vertical alignment adjusted; Help paragraphs use measured height. Main was fast-forwarded to the user's merged d8090ab before editing. Unity 6000.3.18f1 import/compilation passed on 8 October. MenuFontValidation.Run checked the primary font on Home, map, shop, wardrobe, all four Help tabs, settings and statistics at 1600x1000 and 900x1000; first pass reported RAT_MENU_FONT_OK and no text-overflow warnings. Screenshots in Logs/FontReview. Gameplay pause/results and browser rendering remain manual checks. No commit or publication performed.
 - Token input alignment: placeholder and entered value now use MidlineLeft inside the padded input viewport. Static diff checks passed; Unity visual confirmation pending.

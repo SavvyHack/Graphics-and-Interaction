@@ -38,6 +38,7 @@ public static class EnclosureLevelBuilder
         PrepareMaterials();
         for (int i = 2; i < CampaignCatalog.Count; i++) Build(i);
         FireParticleAuthoring.Build();
+        LevelLabelStyle.ApplyAll(); // Keep rebuilt signs readable (outline, colour by meaning, in front of the glass).
         AssetDatabase.SaveAssets();
         Debug.Log("RAT_ENCLOSURES_BUILT");
     }

@@ -29,6 +29,16 @@ Escape pauses/resumes; from a sub-menu it returns one level rather than accident
 ## Input and layout
 Default menu typography is now Bouncy Bun from `Assets/Resources/Fonts/BouncybunDemo-V4K8y.otf`, loaded centrally by CampaignUI into a shared dynamic 2048px TextMesh Pro SDF atlas. Serialized scene fonts remain fallback fonts for missing glyphs, not the primary menu font. No per-scene setup is needed; new menus should use CampaignUI's shared text helpers. The original supplied font remains in Downloads; the project's source note records its demo designation. Bundled TextMesh Pro resources are untouched.
 
+In-level signs (world-space TextMesh Pro) match the menu font. The tutor reported them confusing and too hard to see. `Assets/Editor/LevelLabelStyle.cs` (menu **Project RAT > Restyle Level Labels**, also run at the end of `EnclosureLevelBuilder.BuildAll`) restyles every sign in the seven level scenes:
+- **Font:** a saved, static `Assets/Resources/Fonts/Level Sign SDF.asset` built from Bouncy Bun. The demo font has no punctuation, so `' + , - . / : < > ^` fall back to Liberation Sans.
+- **Material:** `Assets/Materials/Campaign/Level sign.mat`, with a thick dark-navy outline and a soft drop shadow.
+- **Colour by meaning:** yellow for instructions and arrows; white for power-up names, titles, RELEASE and EXIT; mint for checkpoint numbers.
+- **Size:** power-up names 3.6, checkpoints 3.4, instructions at least 4.2.
+- **Placement:** z -2.45, in front of the observation glass, so its glare no longer washes text out.
+- **Collisions:** colliding signs are lifted apart, and a decorative arrow lying on text is hidden.
+
+The tool is safe to re-run. Rendered gameplay-zoom views of levels 1, 3, 5, 6 and 7 were inspected before and after.
+
 Controls use vertically centred text with padding and bounded autosizing; map labels cap at 18, ordinary buttons at 22 and Home title at 48. Paragraphs retain readable fixed text size and grow with TMP preferred height. Unity 6000.3.18f1 import/compilation passed on 8 October. MenuFontValidation.Run passed primary-font checks on ten menu pages at 1600x1000 and 900x1000 with no text-overflow warnings; Home, settings, map and story captures were visually inspected. Remaining manual checks: gameplay Pause/results, keyboard/text input interaction and browser rendering.
 
 

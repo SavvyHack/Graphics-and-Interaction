@@ -242,6 +242,7 @@ public class PlayerRatController : MonoBehaviour
 
         bool held = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
         bool jetting = held && powerups.Has(RatAugment.Jetpack) && powerups.JetFuel > 0f;
+
         if (held && !jetting && powerups.Has(RatAugment.Glide))
         {
             float headroom = Updraft.Headroom(transform.position + controller.center);
@@ -251,6 +252,7 @@ public class PlayerRatController : MonoBehaviour
             else verticalVelocity = Mathf.Max(verticalVelocity, -glideFallSpeed);
             IsGliding = lifted || verticalVelocity <= 0f;
         }
+
         // Holding towards a wall slows the fall so the rat can line up a wall kick.
         if (wallTimer > 0f && powerups.Has(RatAugment.WallJump) && horizontalInput * wallDirection > 0f)
             verticalVelocity = Mathf.Max(verticalVelocity, -wallSlideSpeed);

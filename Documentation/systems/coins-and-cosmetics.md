@@ -3,6 +3,8 @@
 ## Implementation update - 6 October 2026
 CampaignProfile/CoinPickup implement 140 permanent IDs (20 per stage). CampaignUI supplies Shop and Wardrobe, RatCosmetic applies colour/scarf/vest to active and waiting rats. Replacement stages retain enclosure/transfer IDs. Cyan augment stations are separate temporary gameplay pickups.
 
+Token pickup cue (8 October 2026): a collected gold token now plays the dedicated `coin_received` clip through `AudioManager.PlayCoin` instead of the checkpoint sound. Cyan augment stations, checkpoints, portals, hatches and latches keep the checkpoint cue. See [UI and audio](ui-and-audio.md#token-pickup-cue---8-october-2026).
+
 Coin update (user direction, 6 October 2026): coins respawn on every new attempt and each pickup adds one coin to `CampaignProfile.Data.earned`. `RatAttempt.pickedCoins` stops a coin paying twice within one attempt. `Data.coins` still records unique discoveries for the map's `n/20 unique coins` count. Wallet = earned - spent. Old profiles migrate with `earned = max(earned, coins.Count)`, so existing balances and outfits are preserved. Before this change, every collected ID stayed hidden forever, so replayed levels (including level 1) looked empty. This supersedes the "no respawn / no farming" rule below. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
 
 ## Outfit catalog update - 7 October 2026

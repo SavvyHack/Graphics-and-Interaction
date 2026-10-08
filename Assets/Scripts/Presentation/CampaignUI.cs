@@ -349,26 +349,56 @@ public class CampaignUI : MonoBehaviour
         if (previewOutfit < 0 || previewOutfit >= CampaignCatalog.OutfitIds.Length ||
             (!shop && !CampaignProfile.Data.owned.Contains(CampaignCatalog.OutfitIds[previewOutfit])))
             previewOutfit = CampaignProfile.Equipped;
+
+        // The preview belongs to the page, outside the scrolling outfit list.
+        Place(pageScroll.viewport, new Vector2(.06f,.075f), new Vector2(.94f,.48f));
         Preview(1,previewOutfit);
+        if (ratDisplayPrefab != null)
+        {
+            RectTransform exhibit = (RectTransform)content.GetChild(content.childCount-1);
+            exhibit.SetParent(menu,false);
+            Place(exhibit,new Vector2(.06f,.55f),new Vector2(.94f,.78f));
+        }
+        TMP_Text previewName = Label(menu,"PREVIEW / " + CampaignCatalog.OutfitNames[previewOutfit],20);
+        Place(previewName.rectTransform,new Vector2(.06f,.49f),new Vector2(.94f,.54f));
+        previewName.color = cyan;
         for(int i=0;i<CampaignCatalog.OutfitIds.Length;i++)
         {
             int index=i;
             bool owned=CampaignProfile.Data.owned.Contains(CampaignCatalog.OutfitIds[i]);
             if (!shop && !owned) continue;
-            string status=CampaignProfile.Equipped==i ? "EQUIPPED" : owned ? "OWNED" : CampaignCatalog.Prices[i]+" tokens";
-            Button((previewOutfit==i ? "› " : "")+CampaignCatalog.OutfitNames[i]+"   /   "+status,()=>{ previewOutfit=index; ShowWardrobe(shop); });
-        }
-        bool has=CampaignProfile.Data.owned.Contains(CampaignCatalog.OutfitIds[previewOutfit]);
-        if(has) Button("Equip "+CampaignCatalog.OutfitNames[previewOutfit],()=>{CampaignProfile.Equip(previewOutfit); ShowWardrobe(shop);},CampaignProfile.Equipped!=previewOutfit);
-        else
-        {
-            int cost=CampaignCatalog.Prices[previewOutfit];
-            Button(CampaignProfile.Wallet<cost ? $"Need {cost-CampaignProfile.Wallet} more tokens" : $"Buy {CampaignCatalog.OutfitNames[previewOutfit]} - {cost} tokens",()=>{
-                int item=previewOutfit;
-                Confirm("Purchase outfit?",$"{CampaignCatalog.OutfitNames[item]} costs {cost} tokens. Buying does not automatically equip it.",()=>{CampaignProfile.Buy(item);ShowWardrobe(shop);},()=>ShowWardrobe(shop));
-            },CampaignProfile.Wallet>=cost);
+            bool equipped=CampaignProfile.Equipped==i;
+            int cost=CampaignCatalog.Prices[i];
+            string status=equipped ? "EQUIPPED" : owned ? "OWNED" : cost+" tokens";
+            RectTransform row = Rect("Outfit row / " + CampaignCatalog.OutfitNames[i],content);
+            row.gameObject.AddComponent<LayoutElement>().preferredHeight=72;
+            Button preview = MakeButton(row,CampaignCatalog.OutfitNames[i]+"   /   "+status,()=>{
+                previewOutfit=index;
+                previewName.text="PREVIEW / " + CampaignCatalog.OutfitNames[index];
+                if(previewRoot != null)
+                    foreach(RatCosmetic cosmetic in previewRoot.GetComponentsInChildren<RatCosmetic>()) cosmetic.Apply(index);
+            });
+            Place((RectTransform)preview.transform,Vector2.zero,new Vector2(.69f,1));
+            if(EventSystem.current.currentSelectedGameObject==null) Focus(preview);
+            Action reopen=()=>{
+                ShowWardrobe(shop);
+                Canvas.ForceUpdateCanvases();
+                pageScroll.verticalNormalizedPosition=outfitScrollPosition;
+                previousSelection=EventSystem.current.currentSelectedGameObject;
+            };
+            string actionLabel=shop ? (equipped ? "Equipped" : owned ? "Owned" : CampaignProfile.Wallet<cost ? "Need "+(cost-CampaignProfile.Wallet) : "Buy / "+cost) : equipped ? "Equipped" : "Equip";
+            Button action=MakeButton(row,actionLabel,()=>{
+                outfitScrollPosition=pageScroll.verticalNormalizedPosition;
+                previewOutfit=index;
+                if(!shop) { CampaignProfile.Equip(index); reopen(); return; }
+                Confirm("Purchase outfit?",$"{CampaignCatalog.OutfitNames[index]} costs {cost} tokens. Buying does not automatically equip it.",()=>{CampaignProfile.Buy(index);reopen();},reopen);
+            });
+            action.interactable=shop ? !owned && CampaignProfile.Wallet>=cost : !equipped;
+            Place((RectTransform)action.transform,new Vector2(.71f,0),Vector2.one);
+            action.GetComponentInChildren<TMP_Text>().alignment=TextAlignmentOptions.Midline;
         }
     }
+    private float outfitScrollPosition=1;
     private void Preview(int count,int outfit,float height=220,bool escaped=false)
     {
         if(ratDisplayPrefab==null) return;

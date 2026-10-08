@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d8d9587a31649a7afea2346a78d5da, type: 3}
+  m_Name: IntroCutsceneData
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneData
+  panels:
+  - image: {fileID: 21300000, guid: a8798f6473bda402b85a02be2a87393e, type: 3}
+    caption: The year is 2176. Cities rise above the clouds, and nearly every part
+      of life is measured, tested and optimised.
+    transition: 0
+  - image: {fileID: 21300000, guid: 03e1f0babb29a458c96897285e1549e0, type: 3}
+    caption: Deep inside one of those cities, a research facility runs experiments
+      day and night.
+    transition: 1
+  - image: {fileID: 21300000, guid: 3045617e368d341fd87dbfb3b5dbde72, type: 3}
+    caption: In one of its rooms stands a glass enclosure, built to observe how living
+      things solve problems.
+    transition: 0
+  - image: {fileID: 21300000, guid: eaf9e8c4552a14fe9887da81265288d0, type: 3}
+    caption: Inside is a course of ramps, tubes, wheels and moving obstacles. None
+      of it was built for comfort.
+    transition: 1
+  - image: {fileID: 21300000, guid: 01c0e6718e3064c54a734080771aff4a, type: 3}
+    caption: Three test subjects. One cautious. One restless. One curious.
+    transition: 0
+  - image: {fileID: 21300000, guid: 6cfb2eb401b8f487c8def43774f6bf44, type: 3}
+    caption: Someone is watching. A timer is running. When it reaches zero, the experiment
+      is complete.
+    transition: 0
+  - image: {fileID: 21300000, guid: 1146ed10d1bd644f78080d2d0e26ed80, type: 3}
+    caption: But somewhere beyond the last obstacle, there is a way out.
+    transition: 1

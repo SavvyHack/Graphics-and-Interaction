@@ -9,6 +9,8 @@ Start scene (`Assets/Scenes/Start.unity`, build index 0) plays a 7-panel narrate
 - `Assets/Art/Cutscene/Panel_01.png` to `Panel_07.png` (1920x810 placeholders), `UI/NextArrow.png`, `IntroCutsceneData.asset`.
 
 ## Behaviour
+Home now includes **Replay intro**, which opens the existing Start scene without resetting progress, tokens or outfits. Skip or completing the panels returns to Home. The button uses the shared Bouncy Bun menu styling and prevents duplicate loads.
+
 Right Arrow (Input System keyboard) or a click/tap on the bobbing arrow advances; nothing else does. Text appears instantly. SlideIn panels slide from the right over 0.35s (ease-out cubic) and input is blocked meanwhile. The last advance loads Home. No audio. Canvas scales from 1920x1080; picture area is the top 75%, text box the bottom 25%.
 
 ## Editing

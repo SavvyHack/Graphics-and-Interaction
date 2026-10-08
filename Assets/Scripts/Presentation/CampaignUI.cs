@@ -271,7 +271,18 @@ public class CampaignUI : MonoBehaviour
         Row(()=> { Button("Laboratory map", ShowSelect); Button("Rat wardrobe", () => ShowWardrobe(false)); });
         Row(()=> { Button("Shop", () => ShowWardrobe(true)); Button("Statistics", ShowStats); });
         Row(()=> { Button("Settings", () => ShowSettings(ShowHome)); Button("Help", () => ShowHelp(ShowHome,0)); });
-        if (!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer) Button("Quit", Application.Quit);
+        Row(()=> {
+            Button("Replay intro", () => {
+                if (navigating) return;
+                const string introScene = "Assets/Scenes/Start.unity";
+                if (!Application.CanStreamedLevelBeLoaded(introScene))
+                { ShowNotice("The intro is unavailable in this build."); return; }
+                navigating = true;
+                Time.timeScale = 1;
+                SceneManager.LoadScene(introScene);
+            });
+            if (!Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer) Button("Quit", Application.Quit);
+        });
     }
     private void StyleHome()
     {

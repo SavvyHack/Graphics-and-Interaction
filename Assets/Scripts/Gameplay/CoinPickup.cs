@@ -20,7 +20,7 @@ public class CoinPickup : MonoBehaviour
         if (collected || GameManager.Instance == null || GameManager.Instance.CurrentState != GameManager.GameState.Playing || lives == null || other.GetComponentInParent<PlayerRatController>() != lives.Player) return;
         if (!CampaignProfile.Collect(stableId)) return;
         collected = true;
-        AudioManager.Instance?.PlayCheckpoint();
+        AudioManager.Instance?.PlayCoin();
         gameObject.SetActive(false);
     }
 }

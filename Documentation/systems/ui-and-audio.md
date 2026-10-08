@@ -1,5 +1,21 @@
 # UI and audio
 
+## Token pickup cue - 8 October 2026
+Gold token pickups now play the user-supplied `coin_received.mp3` (1.15 s, 44.1 kHz, mono on import) through a new
+`AudioManager.PlayCoin`. `Assets/Scripts/Gameplay/CoinPickup.cs` calls it instead of reusing the checkpoint cue, so
+tokens are audibly distinct from checkpoints, portals, hatches and augment stations.
+
+The clip is `Assets/Resources/Audio/coin_received.mp3` and is loaded once per `AudioManager` from Resources, so every
+runtime scene works with no scene rewiring (same resolution pattern as the shared Bouncy Bun menu font). A new serialized
+`coinClip` field on `AudioManager` takes precedence when a scene assigns it, and a warning names the missing path if
+neither source resolves. No scene or prefab file was edited. Unity imported the clip with the authored settings and
+recompiled the scripts without errors on 8 October; an audible check in Play mode is still outstanding.
+
+Cue level is a single constant, `AudioManager.CoinVolumeScale` (currently 0.6, about -4.4 dB), passed to
+`PlayOneShot(clip, volumeScale)` so it multiplies with the SFX settings slider instead of replacing it. A serialized
+per-scene volume field was avoided for the same reason as the clip reference: `AudioManager` instances live in 15 scenes.
+This constant was added after the import/compile check above, so it awaits the next Editor recompile.
+
 ## Implementation update - 6 October 2026
 CampaignUI supplies Home, Pause, Failure, map, Help, Shop/Wardrobe, Settings, Statistics and survivor outcomes. AudioManager routes saved volume settings to event cues and a quiet generated ambient loop. Pause/menu flow and displays passed developer checks. Human listening, keyboard-only browsing at all resolutions and browser user-gesture audio remain to check. Runtime paths are under `Assets/Scripts/Gameplay` and `Assets/Scripts/Presentation`; scenes and verification limits are listed in [CURRENT_STATE](../CURRENT_STATE.md).
 
@@ -54,7 +70,7 @@ Extend/reuse AudioManager for event calls. Introduce Master, Music and SFX buses
 Sliders preview immediately; Restore Defaults affects audio settings only. Music must not restart or duplicate on every pause/settings visit. On pause, freeze/pause gameplay loops as appropriate while UI cues remain available. Browser first interaction must permit audio startup; verify in a real WebGL build.
 
 ## Required feedback
-Jump/landing, loss, checkpoint, plate engagement/release, switch, portal departure/arrival, denied interaction, menu selection, level clear and final escape. Existing five WAVs cover only jump/checkpoint/loss/complete/failure. Add missing sounds with documented origins; limit repeated overlap-trigger sounds.
+Jump/landing, loss, checkpoint, plate engagement/release, switch, portal departure/arrival, denied interaction, menu selection, level clear and final escape. Existing five WAVs cover only jump/checkpoint/loss/complete/failure; token pickups now use the user-supplied `coin_received.mp3` (see the update above). Other feedback sounds are still missing. Add missing sounds with documented origins; limit repeated overlap-trigger sounds.
 
 ## Acceptance
 Navigate every screen with mouse and keyboard; return correctly from pause/settings; leave/re-enter levels; hear no duplicate music. Set each slider to zero and full, mute/unmute, change while paused and restart the application. Verify stored values, silent sources, completion panels, losing all lives, browser focus changes and UI scale. Do not report audio implemented from silent null-safe method calls alone.

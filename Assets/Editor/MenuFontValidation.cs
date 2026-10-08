@@ -14,7 +14,7 @@ public static class MenuFontValidation
 {
     private static int frames, step;
     private static bool pageReady;
-    private static readonly string[] Pages = { "Home", "Map", "Shop", "Wardrobe", "Controls", "Powerups", "Guide", "Story", "Settings", "Statistics" };
+    private static readonly string[] Pages = { "Home", "Map", "Shop", "Wardrobe", "Controls", "Powerups", "Guide", "Story", "Settings", "Statistics", "Shop-scrolled", "Wardrobe-scrolled" };
     static MenuFontValidation() { EditorApplication.update += Tick; }
     public static void Run()
     {
@@ -39,6 +39,7 @@ public static class MenuFontValidation
             {
                 Capture(ui, 1600, 1000);
                 Capture(ui, 900, 1000);
+                if (step == 2 || step >= 10) VerifyPinnedPreview(ui);
                 step++; pageReady = false; return;
             }
             switch (step)
@@ -53,10 +54,36 @@ public static class MenuFontValidation
                 case 7: Invoke(ui, "ShowHelp", home, 2); break;
                 case 8: Invoke(ui, "ShowSettings", home); break;
                 case 9: Invoke(ui, "ShowStats"); break;
+                case 10:
+                    Invoke(ui, "ShowWardrobe", true);
+                    Canvas.ForceUpdateCanvases(); ui.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition=0;
+                    break;
+                case 11:
+                    CampaignProfile.AddTokens(2000);
+                    for(int i=1;i<CampaignCatalog.OutfitIds.Length;i++) CampaignProfile.Buy(i);
+                    Invoke(ui, "ShowWardrobe", false);
+                    Canvas.ForceUpdateCanvases(); ui.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition=0;
+                    break;
             }
             pageReady = true;
         }
         catch (Exception ex) { Debug.LogException(ex); Finish(1); }
+    }
+    private static void VerifyPinnedPreview(CampaignUI ui)
+    {
+        var scroll = ui.GetComponentInChildren<ScrollRect>();
+        var preview = ui.transform.Find("Campaign canvas").GetComponentInChildren<RawImage>();
+        if (preview == null || preview.transform.IsChildOf(scroll.content)) throw new Exception("Preview scrolls with outfits.");
+        Vector3 position = preview.transform.position;
+        scroll.verticalNormalizedPosition=0; Canvas.ForceUpdateCanvases();
+        if (Vector3.Distance(position, preview.transform.position)>.01f) throw new Exception("Scrolling moved the preview.");
+        var row = scroll.content.GetChild(scroll.content.childCount-1);
+        var actions = row.GetComponentsInChildren<Button>();
+        if(actions.Length!=2) throw new Exception("Outfit row must contain preview and action buttons.");
+        var content = scroll.content;
+        actions[0].onClick.Invoke(); Canvas.ForceUpdateCanvases();
+        if(scroll.content!=content || Vector3.Distance(position, preview.transform.position)>.01f) throw new Exception("Selecting outfit rebuilt the list or moved preview.");
+        Debug.Log("RAT_PINNED_PREVIEW_OK " + Pages[step]);
     }
     private static void Capture(CampaignUI ui, int width, int height)
     {

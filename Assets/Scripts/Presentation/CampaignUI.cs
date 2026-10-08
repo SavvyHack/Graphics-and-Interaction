@@ -570,6 +570,7 @@ public class CampaignUI : MonoBehaviour
         if(won) Preview(result.survivors,CampaignProfile.Equipped,180,final);
         Copy($"Rats remaining this level: {result.survivors}/3\nTime {CampaignProfile.TimeText(result.seconds)}   •   Rats lost {result.deaths}   •   Tokens this attempt {result.coins}",25,90);
         if(won&&!final) Focus(Button("Next level",()=>session.LoadLevel(session.LevelIndex+1)));
+        if(final&&Application.CanStreamedLevelBeLoaded("Ending")) Focus(Button("Continue",()=>{Time.timeScale=1;SceneManager.LoadScene("Ending");}));
         Button(won?"Replay level":$"Retry with {lives.EntryLives} "+(lives.EntryLives==1?"rat":"rats"),()=>session.LoadLevel(session.LevelIndex));
         if(final) Button("Laboratory map",ShowSelect);
         Button("Home",session.Home);

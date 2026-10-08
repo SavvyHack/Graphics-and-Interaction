@@ -10,53 +10,87 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Creates the intro cutscene data asset and the Start scene, and puts Start before Home in Build Settings.
+/// Creates the intro (Start) and ending cutscene data assets and scenes, and orders them in Build Settings
+/// (Start before Home, Ending after the last level).
 /// Never overwrites an existing Start scene or edited captions; delete the asset first to rebuild.
 /// </summary>
 public static class CutsceneAuthoring
 {
     const string ArtFolder = "Assets/Art/Cutscene";
-    const string DataPath = ArtFolder + "/IntroCutsceneData.asset";
     const string ArrowPath = ArtFolder + "/UI/NextArrow.png";
-    public const string ScenePath = "Assets/Scenes/Start.unity";
     const string HomePath = "Assets/Scenes/Home.unity";
+    public const string ScenePath = "Assets/Scenes/Start.unity";
+    public const string EndingScenePath = "Assets/Scenes/Ending.unity";
 
     static readonly Color Ink = new Color(.035f, .06f, .1f, .88f);
     static readonly Color Panel = new Color(.075f, .13f, .19f, .92f);
     static readonly Color Border = new Color(.6f, .72f, .78f, .9f);
     static readonly Color Cyan = new Color(.36f, .94f, .91f);
 
-    static readonly (string caption, CutsceneTransition transition)[] Beats =
+    class Config
     {
-        ("The year is 2176. Cities rise above the clouds, and nearly every part of life is measured, tested and optimised.", CutsceneTransition.HardCut),
-        ("Deep inside one of those cities, a research facility runs experiments day and night.", CutsceneTransition.SlideIn),
-        ("In one of its rooms stands a glass enclosure, built to observe how living things solve problems.", CutsceneTransition.HardCut),
-        ("Inside is a course of ramps, tubes, wheels and moving obstacles. None of it was built for comfort.", CutsceneTransition.SlideIn),
-        ("Three test subjects. One cautious. One restless. One curious.", CutsceneTransition.HardCut),
-        ("Someone is watching. A timer is running. When it reaches zero, the experiment is complete.", CutsceneTransition.HardCut),
-        ("But somewhere beyond the last obstacle, there is a way out.", CutsceneTransition.SlideIn),
+        public string name, scenePath, dataPath, panelPrefix, nextScene;
+        public bool first;
+        public (string caption, CutsceneTransition transition)[] beats;
+    }
+
+    static readonly Config Intro = new Config
+    {
+        name = "Intro", scenePath = ScenePath, dataPath = ArtFolder + "/IntroCutsceneData.asset",
+        panelPrefix = "Panel_", nextScene = "Home", first = true,
+        beats = new[]
+        {
+            ("The year is 2176. Cities rise above the clouds, and nearly every part of life is measured, tested and optimised.", CutsceneTransition.HardCut),
+            ("Deep inside one of those cities, a research facility runs experiments day and night.", CutsceneTransition.SlideIn),
+            ("In one of its rooms stands a glass enclosure, built to observe how living things solve problems.", CutsceneTransition.HardCut),
+            ("Inside is a course of ramps, tubes, wheels and moving obstacles. None of it was built for comfort.", CutsceneTransition.SlideIn),
+            ("Three test subjects. One cautious. One restless. One curious.", CutsceneTransition.HardCut),
+            ("Someone is watching. A timer is running. When it reaches zero, the experiment is complete.", CutsceneTransition.HardCut),
+            ("But somewhere beyond the last obstacle, there is a way out.", CutsceneTransition.SlideIn),
+        },
+    };
+
+    static readonly Config Ending = new Config
+    {
+        name = "Ending", scenePath = EndingScenePath, dataPath = ArtFolder + "/EndingCutsceneData.asset",
+        panelPrefix = "Ending_", nextScene = "Home", first = false,
+        beats = new[]
+        {
+            ("The last door slides open, and cool, fresh air rushes in. Nothing in the laboratory ever smelled like this.", CutsceneTransition.HardCut),
+            ("Beyond the glass there is a sky with no ceiling, and a city that glows all the way to the horizon.", CutsceneTransition.SlideIn),
+            ("For the first time, the rats stand in the open. It is bigger, louder and wilder than any test course.", CutsceneTransition.HardCut),
+            ("Whatever waits out here, they will face it together. They are never going back in.", CutsceneTransition.SlideIn),
+        },
     };
 
     [MenuItem("Project R.A.T./Cutscene/Build Intro Cutscene")]
-    public static void Build()
+    public static void BuildIntro() => Build(Intro);
+
+    [MenuItem("Project R.A.T./Cutscene/Build Ending Cutscene")]
+    public static void BuildEnding() => Build(Ending);
+
+    static void Build(Config c)
     {
-        if (System.IO.File.Exists(ScenePath))
+        if (System.IO.File.Exists(c.scenePath))
         {
-            Debug.LogWarning("Start scene already exists; not overwriting. Delete " + ScenePath + " to rebuild.");
+            Debug.LogWarning(c.name + " scene already exists; not overwriting. Delete " + c.scenePath + " to rebuild.");
             return;
         }
         if (EditorApplication.isPlayingOrWillChangePlaymode || !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
-        ImportSprites();
-        CutsceneData data = CreateData();
-        BuildScene(data);
-        SetBuildOrder();
-        Debug.Log("Intro cutscene built: " + ScenePath);
+        ImportSprites(c);
+        CutsceneData data = CreateData(c);
+        BuildScene(c, data);
+        SetBuildOrder(c);
+        Debug.Log(c.name + " cutscene built: " + c.scenePath);
     }
 
-    static void ImportSprites()
+    static string PanelPath(Config c, int number) => $"{ArtFolder}/{c.panelPrefix}{number:00}.png";
+
+    static void ImportSprites(Config c)
     {
-        foreach (string path in Directory.GetPaths())
+        var paths = Enumerable.Range(1, c.beats.Length).Select(i => PanelPath(c, i)).Append(ArrowPath);
+        foreach (string path in paths)
         {
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             if (importer == null) continue;
@@ -69,37 +103,28 @@ public static class CutsceneAuthoring
         }
     }
 
-    static class Directory
+    static CutsceneData CreateData(Config c)
     {
-        public static IEnumerable<string> GetPaths()
-        {
-            for (int i = 1; i <= Beats.Length; i++) yield return $"{ArtFolder}/Panel_{i:00}.png";
-            yield return ArrowPath;
-        }
-    }
-
-    static CutsceneData CreateData()
-    {
-        var existing = AssetDatabase.LoadAssetAtPath<CutsceneData>(DataPath);
+        var existing = AssetDatabase.LoadAssetAtPath<CutsceneData>(c.dataPath);
         if (existing != null) return existing;
         var data = ScriptableObject.CreateInstance<CutsceneData>();
-        for (int i = 0; i < Beats.Length; i++)
+        for (int i = 0; i < c.beats.Length; i++)
             data.panels.Add(new CutsceneData.Panel
             {
-                image = AssetDatabase.LoadAssetAtPath<Sprite>($"{ArtFolder}/Panel_{i + 1:00}.png"),
-                caption = Beats[i].caption,
-                transition = Beats[i].transition,
+                image = AssetDatabase.LoadAssetAtPath<Sprite>(PanelPath(c, i + 1)),
+                caption = c.beats[i].caption,
+                transition = c.beats[i].transition,
             });
-        AssetDatabase.CreateAsset(data, DataPath);
+        AssetDatabase.CreateAsset(data, c.dataPath);
         AssetDatabase.SaveAssets();
         return data;
     }
 
-    static void BuildScene(CutsceneData data)
+    static void BuildScene(Config c, CutsceneData data)
     {
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         // Replacing the scene unloads unused objects, which can orphan the just-created asset instance.
-        data = AssetDatabase.LoadAssetAtPath<CutsceneData>(DataPath);
+        data = AssetDatabase.LoadAssetAtPath<CutsceneData>(c.dataPath);
 
         var cam = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
         cam.tag = "MainCamera";
@@ -168,7 +193,7 @@ public static class CutsceneAuthoring
 
         var so = new SerializedObject(canvasGo.GetComponent<CutsceneController>());
         so.FindProperty("data").objectReferenceValue = data;
-        so.FindProperty("nextSceneName").stringValue = "Home";
+        so.FindProperty("nextSceneName").stringValue = c.nextScene;
         so.FindProperty("panelImage").objectReferenceValue = panelImage;
         so.FindProperty("incomingImage").objectReferenceValue = incoming;
         so.FindProperty("captionText").objectReferenceValue = caption;
@@ -178,13 +203,15 @@ public static class CutsceneAuthoring
         so.ApplyModifiedPropertiesWithoutUndo();
 
         caption.text = data.panels[0].caption;
-        EditorSceneManager.SaveScene(scene, ScenePath);
+        EditorSceneManager.SaveScene(scene, c.scenePath);
     }
 
-    static void SetBuildOrder()
+    static void SetBuildOrder(Config c)
     {
-        var scenes = EditorBuildSettings.scenes.Where(s => s.path != ScenePath).ToList();
-        scenes.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
+        var scenes = EditorBuildSettings.scenes.Where(s => s.path != c.scenePath).ToList();
+        var entry = new EditorBuildSettingsScene(c.scenePath, true);
+        if (!c.first) { scenes.Add(entry); EditorBuildSettings.scenes = scenes.ToArray(); return; }
+        scenes.Insert(0, entry);
         // Home must follow Start directly.
         int home = scenes.FindIndex(s => s.path == HomePath);
         if (home > 1) { var h = scenes[home]; scenes.RemoveAt(home); scenes.Insert(1, h); }

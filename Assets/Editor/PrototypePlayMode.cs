@@ -21,7 +21,7 @@ public static class PrototypePlayMode
     private static void Configure()
     {
         string activePath = SceneManager.GetActiveScene().path;
-        if (activePath == ScenePath || activePath == CutsceneAuthoring.ScenePath || System.Array.IndexOf(CampaignCatalog.Scenes, activePath) >= 0 || RatLevelSlots.IsLevelSlot(activePath) ||
+        if (activePath == ScenePath || activePath == CutsceneAuthoring.ScenePath || activePath == CutsceneAuthoring.EndingScenePath || System.Array.IndexOf(CampaignCatalog.Scenes, activePath) >= 0 || RatLevelSlots.IsLevelSlot(activePath) ||
             !EditorPrefs.GetBool(PreferenceKey, true))
         {
             EditorSceneManager.playModeStartScene = null;

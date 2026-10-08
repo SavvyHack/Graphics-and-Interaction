@@ -22,3 +22,7 @@ Right Arrow (Input System keyboard) or a click/tap on the bobbing arrow advances
 - Placeholder art only; the font lacks some punctuation, so captions rely on the fallback font for those glyphs.
 - `PrototypePlayMode` now also exempts Start so Play runs the cutscene.
 - Right Arrow itself was not pressed in a test; advance logic was called directly.
+
+## Ending cutscene
+`Assets/Scenes/Ending.unity` reuses the same controller, layout and inputs with `Assets/Art/Cutscene/EndingCutsceneData.asset` (4 panels, `Ending_01.png` to `Ending_04.png`, 1920x810 placeholders). It is last in Build Settings and loads `Home` when finished or skipped. Build it from `Project R.A.T./Cutscene/Build Ending Cutscene` (same no-overwrite rule).
+Entry: on the final level's result page, `CampaignUI.ShowResult` adds a focused **Continue** button that loads `Ending` (only shown when the scene is in the build). Captions avoid a rat count because 1 to 3 rats can survive; the placeholder art shows three. Replace art and edit captions exactly as for the intro.

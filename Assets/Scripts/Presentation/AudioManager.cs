@@ -18,6 +18,11 @@ public class AudioManager : MonoBehaviour
     // drives with the SFX slider. 0.6 is about -4.4 dB; 0.5 is about -6 dB.
     private const float CoinVolumeScale = 0.6f;
 
+    // Augment pickup cues relative to the other effects. Each augment gets its own
+    // synthesized cue (see AugmentCues); this is the shared level for all eleven.
+    private const float AugmentVolumeScale = 0.85f;
+
+
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip jumpClip;
     [SerializeField] private AudioClip checkpointClip;
@@ -26,6 +31,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip failureClip;
     // Optional explicit override. Leave empty to use Resources/Audio/coin_received.
     [SerializeField] private AudioClip coinClip;
+    [SerializeField] private AudioClip augmentClip;
     [SerializeField] private AudioSource musicSource;
 
     private AudioClip coinResourceClip;
@@ -53,6 +59,8 @@ public class AudioManager : MonoBehaviour
     public void PlayCompletion() => Play(completionClip);
     public void PlayFailure() => Play(failureClip);
     public void PlayCoin() => Play(ResolveCoinClip(), CoinVolumeScale);
+
+    public void PlayAugment(RatAugment kind) => Play(AugmentCues.Resolve(kind), AugmentVolumeScale);
 
     public void ApplySettings()
     {

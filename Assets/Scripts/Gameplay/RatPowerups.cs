@@ -52,7 +52,7 @@ public class RatPowerups : MonoBehaviour
     {
         remaining[(int)kind] = Durations[(int)kind];
         if (kind == RatAugment.Jetpack) JetFuel = MaxJetFuel;
-        AudioManager.Instance?.PlayCheckpoint();
+        AudioManager.Instance?.PlayAugment(kind);
         Collected?.Invoke(kind);
     }
     private void Update()
